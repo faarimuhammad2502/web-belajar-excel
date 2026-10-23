@@ -1298,7 +1298,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (isCoursePage) {
     // === COURSE PAGE (DASHBOARD WORKBENCH) ===
     try {
-      // Parse URL parameters: ?module=accounting or ?module=hr
       const urlParams = new URLSearchParams(window.location.search);
       const moduleParam = (urlParams.get("module") || "").toLowerCase().trim();
 
@@ -1308,15 +1307,12 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategory = "accounting";
       }
 
-      // Sync active state on navbar module switcher pills
       updateCategoryUI(currentCategory);
 
-      // Render initial sidebar and detail immediately
       renderSidebarList();
       renderFormulaDetail(0);
       updateProgressBarUI();
 
-      // Initialize course interactive controls
       initCategorySwitcher();
       initSidebarSearch();
       initSidebarMobileToggle();
@@ -1395,7 +1391,6 @@ function initLandingNavbar() {
     });
   }
 
-  // Smooth scroll and active state
   $$(".nav-link").forEach((link) => {
     link.addEventListener("click", () => {
       $$(".nav-link").forEach((l) => l.classList.remove("is-active"));
@@ -1451,7 +1446,6 @@ function selectCategory(cat) {
   currentCategory = cat;
   activeFormulaIndex = 0;
 
-  // Update URL without full page reload
   try {
     const url = new URL(window.location);
     url.searchParams.set("module", cat);
@@ -1460,7 +1454,6 @@ function selectCategory(cat) {
 
   updateCategoryUI(cat);
 
-  // Clear search and rerender
   const searchInput = $("#sidebarSearchInput");
   const clearBtn = $("#searchClearBtn");
   if (searchInput) searchInput.value = "";
@@ -1470,14 +1463,12 @@ function selectCategory(cat) {
   renderFormulaDetail(0);
   updateProgressBarUI();
 
-  // Close sidebar drawer on mobile
   closeSidebarOnMobile();
 }
 
 function updateCategoryUI(cat) {
   const isAcc = cat === "accounting";
 
-  // Navbar module buttons
   const catBtnAccounting = $("#catBtnAccounting");
   const catBtnHr = $("#catBtnHr");
   if (catBtnAccounting) {
@@ -1489,7 +1480,6 @@ function updateCategoryUI(cat) {
     catBtnHr.setAttribute("aria-selected", String(!isAcc));
   }
 
-  // Banner & Sidebar label
   const bannerTag = $("#bannerTagText");
   const bannerTitle = $("#bannerTitle");
   const bannerDesc = $("#bannerDesc");
@@ -1613,7 +1603,6 @@ function renderSidebarList(filterText = "") {
 
       btn.addEventListener("click", () => {
         selectFormula(index);
-        // Crucially, automatically close the sidebar overlay if a user clicks any formula menu item while on mobile
         if (window.innerWidth <= 768) {
           closeSidebarOnMobile();
         }
@@ -1656,10 +1645,10 @@ function selectFormula(index) {
    INJECTS:
    1. Syntax & Code block
    2. Practice Table
-   3. FEATURE 3: INTERACTIVE MINI QUIZ (EXACTLY ABOVE SHEETS)
+   3. IMPROVED MINI QUIZ (STUDI KASUS + RESET BUTTON)
    4. Live Google Sheets simulation
    5. Pro tips
-   6. FEATURE 2: PROGRESS TRACKER "MARK AS DONE" BUTTON
+   6. Progress Tracker "Mark as Done" Button
    ========================================================== */
 function renderFormulaDetail(index) {
   const categoryData = DATABASE[currentCategory];
@@ -1702,15 +1691,16 @@ function renderFormulaDetail(index) {
     </tr>
   `).join("");
 
-  // 3. Generate Interactive Google Sheets Embed URL
+  // 3. Google Sheets Embed URL
   const safeTitleSlug = item.title.replace(/[^a-zA-Z0-9]/g, '_');
   const sheetsEmbedUrl = "https://docs.google.com/spreadsheets/d/1KH4XChI8Fd3FfA2GjTWCjOhzmSt0N1cmSzU0OsWNcfs/htmlembed?widget=true&headers=false";
 
-  // 4. Generate Quiz HTML (3 Options)
+  // 4. Generate Quiz HTML with Studi Kasus & Reset Button
   const quizObj = item.quiz || {
-    question: "Kapan rumus ini paling tepat digunakan?",
-    options: ["Saat mengolah data terstruktur", "Saat validasi kondisi bersyarat", "Semua jawaban benar"],
-    correctIndex: 2,
+    scenario: "Manajer meminta Anda menyelesaikan rekapitulasi data berdasarkan tabel transaksi di atas.",
+    question: "Rumus mana yang paling tepat untuk digunakan?",
+    options: ["Rumus Alternatif A", "Rumus Alternatif B", "Rumus Alternatif C"],
+    correctIndex: 1,
     explanation: "Rumus ini dirancang untuk mempermudah kalkulasi data dan otomatisasi pelaporan di dunia kerja."
   };
 
@@ -1792,7 +1782,7 @@ function renderFormulaDetail(index) {
     </section>
 
     <!-- ==========================================================
-         FEATURE 3: INTERACTIVE MINI QUIZ (EXACTLY ABOVE SHEETS)
+         FEATURE 3: UPGRADED MINI QUIZ WITH STUDI KASUS & RESET BUTTON
          ========================================================== -->
     <section class="view-card mini-quiz-container" aria-labelledby="quizHeading">
       <div class="view-card__head">
@@ -1800,20 +1790,35 @@ function renderFormulaDetail(index) {
           <span class="card-chip">UJI PEMAHAMAN</span>
           <span class="quiz-pill">🎯 Mini Kuis Praktik</span>
         </div>
-        <h3 class="card-title" id="quizHeading">Studi Kasus Cepat: ${escapeHTML(item.title)}</h3>
-        <p class="card-desc">${escapeHTML(quizObj.question)}</p>
+        <h3 class="card-title" id="quizHeading">Kuis Praktik: ${escapeHTML(item.title)}</h3>
       </div>
 
-      <div class="quiz-options-list" id="quizOptionsList">
-        ${quizOptionsHTML}
+      <!-- Studi Kasus Scenario Brief -->
+      <div class="studi-kasus-box">
+        <strong>📋 Studi Kasus:</strong>
+        <span>${escapeHTML(quizObj.scenario)}</span>
       </div>
 
-      <div class="quiz-feedback-box" id="quizFeedbackBox" hidden>
-        <div class="feedback-indicator">
-          <span class="feedback-icon" id="feedbackIcon">💡</span>
-          <strong class="feedback-title" id="feedbackTitle">Penjelasan Jawaban:</strong>
+      <div class="quiz-question-wrap">
+        <p class="quiz-question-text">${escapeHTML(quizObj.question)}</p>
+
+        <div class="quiz-options-list" id="quizOptionsList">
+          ${quizOptionsHTML}
         </div>
-        <p class="feedback-text" id="feedbackText">${escapeHTML(quizObj.explanation)}</p>
+
+        <!-- Feedback Box (Hidden initially) -->
+        <div class="quiz-feedback-box" id="quizFeedbackBox" style="display: none;">
+          <div class="feedback-indicator">
+            <span class="feedback-icon" id="feedbackIcon">💡</span>
+            <strong class="feedback-title" id="feedbackTitle">Penjelasan Jawaban:</strong>
+          </div>
+          <p class="feedback-text" id="feedbackText">${escapeHTML(quizObj.explanation)}</p>
+        </div>
+
+        <!-- Reset Quiz Button (Hidden initially) -->
+        <button type="button" class="reset-quiz-btn" id="resetQuizBtn" style="display: none;">
+          <span>↻ Ulangi Kuis</span>
+        </button>
       </div>
     </section>
 
@@ -1880,9 +1885,7 @@ function renderFormulaDetail(index) {
       </div>
     </section>
 
-    <!-- ==========================================================
-         FEATURE 2: PROGRESS TRACKER (MARK AS DONE BUTTON)
-         ========================================================== -->
+    <!-- Section 6: Progress Tracker (Mark as Done Button) -->
     <div class="formula-completion-bar">
       <button type="button" class="mark-done-btn ${isDone ? 'is-completed' : ''}" id="markDoneBtn" data-formula-id="${item.id}">
         <span class="mark-done-icon">${isDone ? '✅' : '○'}</span>
@@ -1891,7 +1894,7 @@ function renderFormulaDetail(index) {
       <span class="completion-note">${isDone ? 'Materi ini telah tersimpan dalam progress belajar Anda.' : 'Klik tombol jika Anda sudah memahami rumus ini.'}</span>
     </div>
 
-    <!-- Section 6: Navigasi Urutan Rumus -->
+    <!-- Section 7: Navigasi Urutan Rumus -->
     <nav class="view-nav-buttons" aria-label="Navigasi urutan rumus">
       <button class="btn btn--outline btn--sm" id="btnPrevFormula" ${index === 0 ? "disabled" : ""}>
         ← Rumus Sebelumnya
@@ -1911,9 +1914,10 @@ function renderFormulaDetail(index) {
     });
   });
 
-  // Attach event listener to Mini Quiz options
+  // Attach event listener to Mini Quiz options & Reset Button
   const quizOptionBtns = $$(".quiz-option-btn", container);
   const quizFeedbackBox = $("#quizFeedbackBox");
+  const resetQuizBtn = $("#resetQuizBtn");
   const feedbackIcon = $("#feedbackIcon");
   const feedbackTitle = $("#feedbackTitle");
 
@@ -1933,18 +1937,35 @@ function renderFormulaDetail(index) {
         if (feedbackTitle) feedbackTitle.textContent = "Luar Biasa! Jawaban Anda Benar:";
       } else {
         optBtn.classList.add("wrong-answer");
-        // Highlight the correct one so user learns
         const correctBtn = quizOptionBtns.find((b) => parseInt(b.dataset.optionIndex, 10) === quizObj.correctIndex);
         if (correctBtn) correctBtn.classList.add("correct-answer");
         if (feedbackIcon) feedbackIcon.textContent = "❌";
         if (feedbackTitle) feedbackTitle.textContent = "Kurang Tepat. Berikut Penjelasannya:";
       }
 
-      if (quizFeedbackBox) {
-        quizFeedbackBox.hidden = false;
-      }
+      // Display feedback box & reveal Reset Quiz button
+      if (quizFeedbackBox) quizFeedbackBox.style.display = "block";
+      if (resetQuizBtn) resetQuizBtn.style.display = "inline-flex";
     });
   });
+
+  // Reset Quiz Button Event Listener
+  if (resetQuizBtn) {
+    resetQuizBtn.addEventListener("click", () => {
+      // a) Remove correct/wrong CSS classes from all options
+      quizOptionBtns.forEach((btn) => {
+        btn.classList.remove("correct-answer", "wrong-answer");
+        // b) Re-enable (unlock) all option buttons
+        btn.disabled = false;
+      });
+
+      // c) Hide the quiz feedback text
+      if (quizFeedbackBox) quizFeedbackBox.style.display = "none";
+
+      // d) Hide the reset button itself, restoring the quiz to its initial state
+      resetQuizBtn.style.display = "none";
+    });
+  }
 
   // Attach event listener to Mark as Done Button
   const markDoneBtn = $("#markDoneBtn");

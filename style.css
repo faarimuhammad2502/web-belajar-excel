@@ -2333,11 +2333,55 @@ body.dark-mode .sheet-instruction {
   border-radius: var(--radius-pill);
 }
 
+/* Studi Kasus Scenario Box */
+.studi-kasus-box {
+  background: rgba(15, 157, 88, 0.08);
+  border-left: 4px solid #0F9D58;
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-top: 14px;
+  margin-bottom: 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--c-text-main);
+  box-shadow: 0 2px 8px rgba(18, 61, 46, 0.04);
+}
+
+.studi-kasus-box strong {
+  color: #0F9D58;
+  display: inline-block;
+  margin-right: 4px;
+  font-weight: 800;
+}
+
+html.dark-mode .studi-kasus-box,
+body.dark-mode .studi-kasus-box {
+  background: rgba(15, 157, 88, 0.15);
+  border-left-color: #2ec17b;
+  color: #e6f4ea;
+}
+
+html.dark-mode .studi-kasus-box strong,
+body.dark-mode .studi-kasus-box strong {
+  color: #2ec17b;
+}
+
+.quiz-question-wrap {
+  margin-top: 4px;
+}
+
+.quiz-question-text {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--c-text-main);
+  margin-bottom: 12px;
+}
+
 .quiz-options-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .quiz-option-btn {
@@ -2418,7 +2462,7 @@ body.dark-mode .sheet-instruction {
 
 /* Quiz Feedback Box */
 .quiz-feedback-box {
-  margin-top: 18px;
+  margin-top: 16px;
   padding: 16px 20px;
   background: var(--c-sage-card);
   border: 1px solid var(--c-border);
@@ -2457,6 +2501,46 @@ body.dark-mode .sheet-instruction {
   font-size: 13.5px;
   color: var(--c-text-body);
   line-height: 1.6;
+  margin: 0;
+}
+
+/* Reset Quiz Button */
+.reset-quiz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--c-surface);
+  color: var(--c-text-main);
+  border: 1.5px solid var(--c-border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.reset-quiz-btn:hover {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+  background: var(--c-sage-card);
+  transform: translateY(-1px);
+}
+
+html.dark-mode .reset-quiz-btn,
+body.dark-mode .reset-quiz-btn {
+  background: var(--c-surface);
+  border-color: var(--c-border);
+  color: var(--c-text-main);
+}
+
+html.dark-mode .reset-quiz-btn:hover,
+body.dark-mode .reset-quiz-btn:hover {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
 }
 
 /* ==========================================================
