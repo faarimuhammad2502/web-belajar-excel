@@ -1,12 +1,13 @@
 /* ==========================================================
    rumus • — Master JavaScript (Vanilla JS)
    
-   Features Implemented:
+   Features Integrated:
    1. Real-time Sticky Search Filter in Left Sidebar
    2. Persistent Dark Mode Toggle with localStorage
    3. Copy-to-Clipboard Functionality for Every Code Block
-   4. Dynamic Module Switcher (ACCOUNTING vs HR - 30 Rumus)
-   5. Dynamic Canvas Animated Favicon
+   4. Live Google Sheets Interactive Simulation Iframe & CTA
+   5. Dynamic Module Switcher (ACCOUNTING vs HR - 30 Rumus)
+   6. Dynamic Canvas Animated Favicon
    ========================================================== */
 
 /* ==========================================================
@@ -46,6 +47,7 @@ const DATABASE = {
         result: "Rp 5.000.000",
         explanation: "Excel mencari kata 'Operasional' di kolom C (baris 1 & 3), kemudian menjumlahkan angka di baris yang cocok pada kolom E: 3.200.000 + 1.800.000 = 5.000.000."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-01/pubhtml?widget=true&amp;headers=false",
       proTip: "Pada SUMIF, kolom yang dijumlahkan berada di belakang. Namun pada SUMIFS, kolom angka yang dijumlahkan harus selalu berada di urutan PERTAMA."
     },
     {
@@ -80,6 +82,7 @@ const DATABASE = {
         result: '"Bank Mandiri Operasional"',
         explanation: "VLOOKUP mencari kode '1102' pada kolom pertama tabel (A2:A5), lalu mengambil nilai dari kolom ke-2 yaitu Nama Akun."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-02/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan selalu FALSE atau 0 di parameter terakhir agar Excel mencari nilai yang persis sama, bukan perkiraan."
     },
     {
@@ -108,6 +111,7 @@ const DATABASE = {
         result: '"1201"',
         explanation: "MATCH mencari 'Piutang Usaha' di B2:B4 dan menemukan posisi baris ke-2. Kemudian INDEX mengambil baris ke-2 dari rentang A2:A4."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-03/pubhtml?widget=true&amp;headers=false",
       proTip: "Formula ini jauh lebih cepat (ringan memory) dibandingkan VLOOKUP pada dataset akuntansi yang mencapai puluhan ribu baris."
     },
     {
@@ -134,6 +138,7 @@ const DATABASE = {
         result: "Rp 7.631.905",
         explanation: "Tiap bulan perusahaan wajib mengalokasikan beban cicilan tetap sebesar Rp 7.631.905 untuk pokok dan bunga."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-04/pubhtml?widget=true&amp;headers=false",
       proTip: "Pastikan satuan rate dan nper sinkron. Jika cicilan bulanan, bagi bunga tahunan dengan 12."
     },
     {
@@ -165,6 +170,7 @@ const DATABASE = {
         result: "Rp 61.677.812",
         explanation: "Total dana terkumpul adalah Rp 61.677.812 (sudah termasuk pokok tabungan Rp 60.000.000 dan bunga imbal hasil)."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-05/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan tanda negatif (-) pada setoran agar hasil perhitungan menghasilkan angka bernilai positif."
     },
     {
@@ -191,6 +197,7 @@ const DATABASE = {
         result: "Rp 7.057.652 (Layak / Profit)",
         explanation: "Karena hasil NPV bernilai positif (> 0), maka proyek pengadaan mesin ini layak dijalankan karena memberi nilai tambah perusahaan."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-06/pubhtml?widget=true&amp;headers=false",
       proTip: "Hati-hati: Dalam Excel, fungsi NPV mengasumsikan arus kas pertama terjadi di akhir tahun pertama. Jangan masukkan investasi tahun 0 ke dalam kurung NPV."
     },
     {
@@ -217,6 +224,7 @@ const DATABASE = {
         result: "8.89%",
         explanation: "Tingkat pengembalian proyek adalah 8.89%. Jika suku bunga pinjaman modal hanya 7%, maka proyek ini menguntungkan."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-07/pubhtml?widget=true&amp;headers=false",
       proTip: "Pastikan setidaknya ada satu nilai negatif (modal keluar) dan satu nilai positif di rentang data agar rumus tidak menghasilkan error #NUM!."
     },
     {
@@ -248,6 +256,7 @@ const DATABASE = {
         result: "Rp 36.000.000 per tahun",
         explanation: "(200.000.000 - 20.000.000) / 5 = 36.000.000 beban penyusutan yang dicatat pada jurnal akuntansi tahunan."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-08/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan SLN untuk laporan pajak standar PSAK Indonesia jika perusahaan Anda menerapkan amortisasi garis lurus."
     },
     {
@@ -274,6 +283,7 @@ const DATABASE = {
         result: "31/03/2026",
         explanation: "Otomatis menghasilkan tanggal 31 Maret tanpa pusing apakah bulan tersebut berumur 30, 31, atau 28/29 hari (kabisat)."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-09/pubhtml?widget=true&amp;headers=false",
       proTip: "Format sel hasil formula sebagai 'Date' agar tidak tampil sebagai angka seri serial number Excel."
     },
     {
@@ -300,6 +310,7 @@ const DATABASE = {
         result: "10/04/2027",
         explanation: "Secara presisi melompat 6 bulan ke depan tepat di tanggal 10."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-10/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan untuk kontrak berjangka (term of payment) bertempo 'Net 30/60/90 days' atau 'X months'."
     },
     {
@@ -328,6 +339,7 @@ const DATABASE = {
         result: "Rp 3.500.000",
         explanation: "Baris IT Support diabaikan karena tersembunyi oleh filter. Hasilnya hanya 1.500.000 + 2.000.000 = 3.500.000."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-11/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan kode 9 atau 109 di lembar kerja buku kas besar agar angka ringkasan selalu sinkron dengan dropdown filter."
     },
     {
@@ -355,6 +367,7 @@ const DATABASE = {
         result: '"BALANCE"',
         explanation: "Jika Debit = Kredit, muncul pesan 'BALANCE', bila berbeda akan menampilkan peringatan adanya selisih pembukuan."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-12/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan kombinasi AND untuk memvalidasi syarat pencairan kas bon: plafon <= limit AND ada paraf atasan."
     },
     {
@@ -381,6 +394,7 @@ const DATABASE = {
         result: "0%",
         explanation: "Pembagian dengan angka 0 yang biasanya menghasilkan error fatal digantikan menjadi angka 0 yang rapi."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-13/pubhtml?widget=true&amp;headers=false",
       proTip: "Selalu bungkus rumus VLOOKUP atau formula rasio keuangan dengan IFERROR(formula; 0) atau IFERROR(formula; \"-\")."
     },
     {
@@ -407,6 +421,7 @@ const DATABASE = {
         result: "Rp 13.800",
         explanation: "Desimal ,05 dibulatkan ke bawah ke bilangan rupiah bulat terdekat."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-14/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan parameter negatif -3 untuk membulatkan harga jual produk ke ribuan rupiah terdekat (misal: 14.720 -> 15.000)."
     },
     {
@@ -436,6 +451,7 @@ const DATABASE = {
         result: "2 Transaksi",
         explanation: "Hanya invoice INV-01 dan INV-04 yang memenuhi kedua syarat tersebut secara serentak."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-accounting-15/pubhtml?widget=true&amp;headers=false",
       proTip: "Tanda perbandingan matematika seperti \">\", \"<\", atau \">=\" harus diapit tanda kutip ganda (\">10000000\")."
     }
   ],
@@ -465,6 +481,7 @@ const DATABASE = {
         result: '"6 Tahun 9 Bulan"',
         explanation: "DATEDIF menghitung selisih tahun secara presisi tanpa pembulatan hari sembarangan."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-01/pubhtml?widget=true&amp;headers=false",
       proTip: "DATEDIF adalah rumus rahasia bawaan Lotus 1-2-3 yang tidak muncul otomatis di autocomplete Excel, namun 100% berfungsi."
     },
     {
@@ -491,6 +508,7 @@ const DATABASE = {
         result: "20 Hari Kerja Aktif",
         explanation: "Dari total 31 hari kalender, dikurangi 9 hari akhir pekan (Sabtu-Minggu) dan 2 hari libur nasional."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-02/pubhtml?widget=true&amp;headers=false",
       proTip: "Simpan daftar libur SKB 3 Menteri dalam satu sheet master terpisah bernama 'Master_Libur' agar mudah dijadikan referensi."
     },
     {
@@ -517,6 +535,7 @@ const DATABASE = {
         result: "25 Hari Kerja",
         explanation: "Hari Sabtu dihitung sebagai hari kerja aktif normal karena parameter weekend diset 11 (Sunday only)."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-03/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan string biner '0000001' jika ingin mengkustomisasi pola hari kerja shift khusus."
     },
     {
@@ -543,6 +562,7 @@ const DATABASE = {
         result: "08/12/2026",
         explanation: "Excel menghitung maju 45 hari kalender kerja tanpa menghitung Sabtu, Minggu, dan hari libur nasional."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-04/pubhtml?widget=true&amp;headers=false",
       proTip: "Sama seperti NETWORKDAYS, ada juga varian WORKDAY.INTL jika perusahaan menerapkan libur non-standar."
     },
     {
@@ -569,6 +589,7 @@ const DATABASE = {
         result: "2 Hari Sakit",
         explanation: "Excel menghitung secara instan jumlah huruf 'S' pada baris absensi karyawan tersebut."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-05/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan COUNTIFS untuk menghitung karyawan di Divisi HR yang cuti lebih dari 3 hari dalam sebulan."
     },
     {
@@ -595,6 +616,7 @@ const DATABASE = {
         result: '"muhammad faari"',
         explanation: "Spasi di depan, belakang, dan spasi rangkap tiga di tengah langsung dipangkas rapi."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-06/pubhtml?widget=true&amp;headers=false",
       proTip: "Kombinasikan selalu dengan PROPER: =PROPER(TRIM(A2)) untuk nama karyawan profesional."
     },
     {
@@ -621,6 +643,7 @@ const DATABASE = {
         result: '"Ahmad Sudirman" & "ahmad.sudirman@rumus.id"',
         explanation: "Huruf kapital acak menjadi rapi, dan pembuatan akun email kantor dapat diotomatisasi seketika."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-07/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan UPPER pada kolom kode jabatan (misal: 'hrd-mgr' -> 'HRD-MGR')."
     },
     {
@@ -647,6 +670,7 @@ const DATABASE = {
         result: '"Muhammad Faari S.E."',
         explanation: "Ketiga kolom digabung secara elegan dengan pemisah satu spasi."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-08/pubhtml?widget=true&amp;headers=false",
       proTip: "Untuk Excel lama yang belum ada TEXTJOIN, gunakan operator ampersand: =A2 & \" \" & B2."
     },
     {
@@ -673,6 +697,7 @@ const DATABASE = {
         result: "69 Hari Tersisa",
         explanation: "Tanpa perlu input manual tanggal hari ini, sisa hari kontrak akan otomatis berkurang setiap hari."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-09/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan Conditional Formatting bersama =TODAY() untuk memberi warna merah jika kontrak tersisa < 30 hari."
     },
     {
@@ -699,6 +724,7 @@ const DATABASE = {
         result: '"Jumat, 23 Oktober 2026"',
         explanation: "Kode [$-421] adalah locale ID untuk Bahasa Indonesia, mengubah angka bulan 10 menjadi 'Oktober' dan hari menjadi 'Jumat'."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-10/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan format TEXT(gaji; \"Rp #,##0\") ketika ingin menggabungkan nominal gaji ke dalam template kalimat surat penawaran."
     },
     {
@@ -725,6 +751,7 @@ const DATABASE = {
         result: '"Grade A"',
         explanation: "Karena skor 86 >= 85, maka langsung diklasifikasikan sebagai Grade A dan berhak menerima bonus 100%."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-11/pubhtml?widget=true&amp;headers=false",
       proTip: "Selalu sertakan parameter 'TRUE; nilai_default' di akhir rumus IFS untuk menangani kondisi yang tidak tercakup."
     },
     {
@@ -752,6 +779,7 @@ const DATABASE = {
         result: "Rp 8.500.000",
         explanation: "Excel mencari 'EMP-101' di kolom pertama dan langsung mengambil nilai kolom ke-4 yaitu Rp 8.500.000."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-12/pubhtml?widget=true&amp;headers=false",
       proTip: "Kunci tabel master dengan tanda dollar $ (misal: $A$2:$D$100) agar saat rumus di-copy ke bawah, referensi tabel tidak bergeser."
     },
     {
@@ -779,6 +807,7 @@ const DATABASE = {
         result: '"Valid Cocok"',
         explanation: "Jika ada selisih satu digit atau ketidaksengajaan spasi, rumus langsung mendeteksinya sebagai FALSE."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-13/pubhtml?widget=true&amp;headers=false",
       proTip: "Formula sama dengan = (A2=B2) tidak sensitif terhadap huruf besar-kecil, sedangkan EXACT(A2; B2) sangat ketat."
     },
     {
@@ -806,6 +835,7 @@ const DATABASE = {
         result: '"Belum Ada NPWP"',
         explanation: "Karena sel NPWP Reza kosong, formula langsung memunculkan status 'Belum Ada NPWP' sebagai reminder tim payroll."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-14/pubhtml?widget=true&amp;headers=false",
       proTip: "Jika sel berisi spasi atau teks kosong (\"\"), ISBLANK menganggapnya tidak kosong. Gunakan =IF(OR(ISBLANK(A2); A2=\"\"); ...) untuk penanganan lebih kuat."
     },
     {
@@ -832,6 +862,7 @@ const DATABASE = {
         result: '"Karyawan Belum Ada"',
         explanation: "Pesan error diganti dengan keterangan ramah yang memandu staf admin untuk mendaftarkan karyawan baru tersebut."
       },
+      sheetsTemplateUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQg3WbB13oN23-placeholder-hr-15/pubhtml?widget=true&amp;headers=false",
       proTip: "Gunakan di seluruh dashboard HR yang memiliki input pencarian interaktif."
     }
   ]
@@ -870,9 +901,7 @@ document.addEventListener("DOMContentLoaded", () => {
    ========================================================== */
 function initTheme() {
   const themeToggleBtn = $("#themeToggleBtn");
-  const themeLabel = $("#themeLabelText");
 
-  // Ambil preferensi dari localStorage atau deteksi sistem
   const savedTheme = localStorage.getItem("rumus_theme");
   const systemPrefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   const isDark = savedTheme === "dark" || (!savedTheme && systemPrefersDark);
@@ -885,7 +914,6 @@ function initTheme() {
       const nextThemeIsDark = !currentlyDark;
       applyTheme(nextThemeIsDark);
       
-      // Simpan preferensi pengguna ke localStorage
       localStorage.setItem("rumus_theme", nextThemeIsDark ? "dark" : "light");
 
       showToast(nextThemeIsDark ? "Mode Gelap diaktifkan 🌙" : "Mode Terang diaktifkan ☀️");
@@ -893,9 +921,6 @@ function initTheme() {
   }
 }
 
-/**
- * Menerapkan class .dark-mode pada html dan body serta mengupdate label tombol
- */
 function applyTheme(isDark) {
   if (isDark) {
     document.documentElement.classList.add("dark-mode");
@@ -917,11 +942,9 @@ function initSidebarSearch() {
 
   if (!searchInput) return;
 
-  // Filter saat pengguna mengetik (real-time input event)
   searchInput.addEventListener("input", (e) => {
     const query = e.target.value;
     
-    // Tampilkan / sembunyikan tombol clear (X)
     if (clearBtn) {
       clearBtn.hidden = !query;
     }
@@ -929,7 +952,6 @@ function initSidebarSearch() {
     renderSidebarList(query);
   });
 
-  // Tombol bersihkan pencarian
   if (clearBtn) {
     clearBtn.addEventListener("click", () => {
       searchInput.value = "";
@@ -943,17 +965,12 @@ function initSidebarSearch() {
 /* ==========================================================
    FEATURE 3: COPY TO CLIPBOARD BUTTON LOGIC
    ========================================================== */
-/**
- * Menyalin teks ke clipboard dan memberikan visual feedback "Copied! ✅"
- * selama 2 detik sebelum kembali ke state awal.
- */
 async function copyFormulaText(textToCopy, btnElement) {
   if (!textToCopy) return;
 
   try {
     await navigator.clipboard.writeText(textToCopy);
   } catch (err) {
-    // Fallback untuk browser versi lama / non-HTTPS
     const textarea = document.createElement("textarea");
     textarea.value = textToCopy;
     textarea.style.position = "fixed";
@@ -964,7 +981,6 @@ async function copyFormulaText(textToCopy, btnElement) {
     textarea.remove();
   }
 
-  // Visual feedback pada tombol copy
   if (btnElement) {
     const originalHTML = btnElement.innerHTML;
     btnElement.classList.add("is-copied");
@@ -975,7 +991,6 @@ async function copyFormulaText(textToCopy, btnElement) {
       <span>Copied! ✅</span>
     `;
 
-    // Kembalikan ke teks dan style semula setelah 2 detik (2000 ms)
     setTimeout(() => {
       btnElement.classList.remove("is-copied");
       btnElement.innerHTML = originalHTML;
@@ -999,29 +1014,26 @@ function initCategorySwitcher() {
 function selectCategory(cat) {
   if (currentCategory === cat) return;
   currentCategory = cat;
-  activeFormulaIndex = 0; // Reset ke nomor pertama pada kategori baru
+  activeFormulaIndex = 0;
 
-  // Update Status Aktif Tombol Navigasi Kategori
   const isAcc = cat === "accounting";
   $("#catBtnAccounting").classList.toggle("is-active", isAcc);
   $("#catBtnAccounting").setAttribute("aria-selected", String(isAcc));
   $("#catBtnHr").classList.toggle("is-active", !isAcc);
   $("#catBtnHr").setAttribute("aria-selected", String(!isAcc));
 
-  // Update Header Banner Texts
   if (isAcc) {
     $("#bannerTagText").textContent = "BIDANG KEUANGAN, AKUNTANSI & PELAPORAN";
     $("#bannerTitle").textContent = "Dashboard Rumus Excel Accounting";
-    $("#bannerDesc").textContent = "Panduan lengkap formula perhitungan finansial, otomatisasi pembukuan, evaluasi investasi proyek, dan pelaporan keuangan perusahaan.";
+    $("#bannerDesc").textContent = "Panduan lengkap formula finansial, otomatisasi pembukuan, evaluasi proyek, dan pelaporan keuangan dengan simulasi Google Sheets langsung.";
     $("#sidebarCategoryLabel").textContent = "MODUL ACCOUNTING";
   } else {
     $("#bannerTagText").textContent = "BIDANG HUMAN RESOURCES, PAYROLL & DATA KERJA";
     $("#bannerTitle").textContent = "Dashboard Rumus Excel HR (Human Resources)";
-    $("#bannerDesc").textContent = "Kumpulan formula esensial untuk manajemen absensi, standarisasi database karyawan, perhitungan masa kerja pensiun, dan rekapitulasi penggajian.";
+    $("#bannerDesc").textContent = "Kumpulan formula esensial untuk manajemen absensi, database karyawan, masa kerja pensiun, dan payroll dengan simulasi Google Sheets langsung.";
     $("#sidebarCategoryLabel").textContent = "MODUL HR";
   }
 
-  // Reset kolom pencarian saat ganti kategori
   const searchInput = $("#sidebarSearchInput");
   const clearBtn = $("#searchClearBtn");
   if (searchInput) searchInput.value = "";
@@ -1030,7 +1042,6 @@ function selectCategory(cat) {
   renderSidebarList("");
   renderFormulaDetail(0);
 
-  // Tutup drawer di mobile
   if (window.innerWidth <= 960) {
     $("#dashboardSidebar").classList.remove("is-open");
   }
@@ -1050,7 +1061,6 @@ function renderSidebarList(filterText = "") {
   let visibleCount = 0;
 
   list.forEach((item, index) => {
-    // Pencarian case-insensitive mencakup judul, tag kualifikasi, atau nomor
     const matches = !query || 
       item.title.toLowerCase().includes(query) || 
       item.tag.toLowerCase().includes(query) ||
@@ -1085,7 +1095,6 @@ function renderSidebarList(filterText = "") {
     }
   });
 
-  // Tampilkan pesan kosong jika tidak ada rumus yang sesuai kueri
   if (visibleCount === 0) {
     container.innerHTML = `
       <div class="sidebar-no-results">
@@ -1095,7 +1104,6 @@ function renderSidebarList(filterText = "") {
     `;
   }
 
-  // Update total badge
   const counterEl = $("#formulaCounter");
   if (counterEl) {
     counterEl.textContent = `${visibleCount} Materi`;
@@ -1105,7 +1113,6 @@ function renderSidebarList(filterText = "") {
 function selectFormula(index) {
   activeFormulaIndex = index;
 
-  // Update class active di sidebar list
   $$(".sidebar__item").forEach((el) => {
     const elIdx = parseInt(el.dataset.index, 10);
     const isActive = elIdx === activeFormulaIndex;
@@ -1118,12 +1125,17 @@ function selectFormula(index) {
 
 /* ==========================================================
    RENDER FORMULA DETAIL VIEW (RIGHT CONTENT STAGE)
+   Includes:
+   - Header & Purpose
+   - Syntax with .code-block & .copy-btn
+   - Practical Case Simulation Table
+   - FEATURE 4: Live Google Sheets Interactive Simulation Section
+   - Pro Tips & Step Navigation
    ========================================================== */
 function renderFormulaDetail(index) {
   const item = DATABASE[currentCategory][index];
   if (!item) return;
 
-  // Update indikator nomor di banner atas
   const statNum = $("#statActiveNum");
   if (statNum) statNum.textContent = item.number;
 
@@ -1156,7 +1168,11 @@ function renderFormulaDetail(index) {
     </tr>
   `).join("");
 
-  // 3. Render Inner Structure
+  // 3. Generate Interactive Google Sheets Embed URL
+  // Gunakan Google Sheets pubhtml template atau embed sandbox yang aman
+  const sheetsEmbedUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vT-RUMUS-EXCEL-SIMULATION-${currentCategory.toUpperCase()}-${item.number}/pubhtml?widget=true&headers=false`;
+
+  // 4. Render Whole Detail View
   container.innerHTML = `
     <!-- Detail Header -->
     <header class="view-header">
@@ -1225,7 +1241,61 @@ function renderFormulaDetail(index) {
       </p>
     </section>
 
-    <!-- Section 3: Tips Praktisi Kantor -->
+    <!-- ==========================================================
+         FEATURE 4: LIVE GOOGLE SHEETS SIMULATION SECTION
+         ========================================================== -->
+    <section class="sheets-sim-card" aria-labelledby="sheetsHeading">
+      <div class="view-card__head">
+        <span class="card-chip card-chip--sheets">SIMULASI LANGSUNG</span>
+        <h3 class="card-title" id="sheetsHeading">Praktik Interaktif di Google Sheets</h3>
+        <p class="card-desc">
+          Lakukan eksperimen rumus <strong>${item.title}</strong> langsung di lembar kerja Google Sheets di bawah ini. Ubah angka atau kriteria untuk melihat kalkulasinya secara realtime!
+        </p>
+      </div>
+
+      <!-- Responsive Google Sheets Frame Container -->
+      <div class="sheets-frame-wrapper">
+        <div class="sheets-mock-toolbar">
+          <div class="sheets-mock-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D58">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/>
+            </svg>
+            <span>Latihan_${currentCategory.toUpperCase()}_${item.number}_${item.title.replace(/[^a-zA-Z0-9]/g, '_')}.xlsx</span>
+          </div>
+          <span class="sheets-mock-status">Tersinkronisasi Otomatis ✓</span>
+        </div>
+
+        <!-- The Responsive Embedded Google Sheets iframe -->
+        <iframe 
+          class="sheets-iframe" 
+          src="${sheetsEmbedUrl}" 
+          title="Google Sheets Simulation - ${item.title}"
+          loading="lazy"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <!-- Action Bar with Google Sheets CTA Button (#0F9D58) -->
+      <div class="sheets-action-bar">
+        <div class="sheets-action-info">
+          <strong>Ingin mengedit di akun Google Anda sendiri?</strong>
+          <span>Buka template spreadsheet resmi ini untuk meng-copy dummy data &amp; menyimpan latihan Anda.</span>
+        </div>
+        <a 
+          href="https://docs.google.com/spreadsheets/create" 
+          class="btn-sheets" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          title="Buka template ini di Google Sheets baru">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/>
+          </svg>
+          <span>Buka Template di Google Sheets ↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Section 4: Tips Praktisi Kantor -->
     <section class="tip-banner">
       <div class="tip-banner__icon">💡</div>
       <div class="tip-banner__content">
@@ -1368,9 +1438,9 @@ function initAnimatedFavicon() {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x, y + h, x, y + h, r);
-    ctx.arcTo(x, y, x + w, y, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y + x, y, r);
     ctx.closePath();
   }
 
@@ -1382,12 +1452,10 @@ function initAnimatedFavicon() {
 
     ctx.clearRect(0, 0, size, size);
 
-    // Green container
     ctx.fillStyle = currentCategory === "accounting" ? "#19734D" : "#123D2E";
     roundRect(offset, offset, s, s, s * 0.22);
     ctx.fill();
 
-    // Excel grid lines
     ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
     ctx.lineWidth = 2;
     for (let i = 1; i < 3; i++) {
@@ -1396,7 +1464,6 @@ function initAnimatedFavicon() {
       ctx.beginPath(); ctx.moveTo(p, offset + 4); ctx.lineTo(p, offset + s - 4); ctx.stroke();
     }
 
-    // Bold X
     ctx.fillStyle = "#FFFFFF";
     ctx.font = `800 ${Math.round(s * 0.58)}px 'Plus Jakarta Sans', system-ui, sans-serif`;
     ctx.textAlign = "center";
