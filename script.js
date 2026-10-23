@@ -881,28 +881,56 @@ const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
 /* ==========================================================
-   INITIALIZATION ON DOM LOAD (DEFENSIVE & FAIL-SAFE)
+   INITIALIZATION ON DOM LOAD (MULTI-PAGE & URL ROUTING)
    ========================================================== */
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Render data SEGERA agar UI tidak pernah blank jika ada script pendukung yg error
-  try {
-    renderSidebarList();
-    renderFormulaDetail(0);
-  } catch (err) {
-    console.error("Gagal melakukan render awal formula:", err);
-  }
+  // 1. Shared features on every page
+  try { initTheme(); } catch (e) { console.error("Theme init error:", e); }
+  try { initAnimatedFavicon(); } catch (e) { console.error("Favicon init error:", e); }
 
-  // 2. Inisialisasi setiap modul fitur secara independen dengan try/catch
-  try { initTheme(); } catch (e) { console.error("Gagal inisialisasi tema:", e); }
-  try { initNavbar(); } catch (e) { console.error("Gagal inisialisasi navbar:", e); }
-  try { initCategorySwitcher(); } catch (e) { console.error("Gagal inisialisasi kategori switcher:", e); }
-  try { initSidebarSearch(); } catch (e) { console.error("Gagal inisialisasi search:", e); }
-  try { initPracticeDemo(); } catch (e) { console.error("Gagal inisialisasi demo praktik:", e); }
-  try { initAnimatedFavicon(); } catch (e) { console.error("Gagal inisialisasi favicon canvas:", e); }
+  // 2. Check which page is currently active
+  const isCoursePage = Boolean($("#formulaSidebarList") && $("#formulaDetailContainer"));
+
+  if (isCoursePage) {
+    // === COURSE PAGE (DASHBOARD WORKBENCH) ===
+    try {
+      // Parse URL parameters: ?module=accounting or ?module=hr
+      const urlParams = new URLSearchParams(window.location.search);
+      const moduleParam = (urlParams.get("module") || "").toLowerCase().trim();
+
+      if (moduleParam === "hr") {
+        currentCategory = "hr";
+      } else {
+        currentCategory = "accounting";
+      }
+
+      // Sync active state on navbar module switcher pills
+      updateCategoryUI(currentCategory);
+
+      // Render initial sidebar and detail immediately
+      renderSidebarList();
+      renderFormulaDetail(0);
+
+      // Initialize course interactive controls
+      initCategorySwitcher();
+      initSidebarSearch();
+      initSidebarMobileToggle();
+    } catch (err) {
+      console.error("Course workbench initialization error:", err);
+    }
+  } else {
+    // === LANDING PAGE (INDEX.HTML) ===
+    try {
+      initLandingNavbar();
+      initPracticeDemo();
+    } catch (err) {
+      console.error("Landing page initialization error:", err);
+    }
+  }
 });
 
 /* ==========================================================
-   FEATURE: PERSISTENT DARK MODE LOGIC
+   FEATURE: PERSISTENT DARK MODE LOGIC (SHARED)
    ========================================================== */
 function initTheme() {
   const themeToggleBtn = $("#themeToggleBtn");
@@ -949,9 +977,9 @@ function applyTheme(isDark) {
 }
 
 /* ==========================================================
-   NAVBAR & MOBILE DRAWER NAVIGATION
+   LANDING PAGE: NAVBAR & SCROLL HIGHLIGHTING
    ========================================================== */
-function initNavbar() {
+function initLandingNavbar() {
   const navToggle = $("#navToggle");
   const mainNavMenu = $("#mainNavMenu");
 
@@ -962,7 +990,7 @@ function initNavbar() {
     });
   }
 
-  // Smooth scroll & close mobile menu on nav click
+  // Smooth scroll and active state
   $$(".nav-link").forEach((link) => {
     link.addEventListener("click", () => {
       $$(".nav-link").forEach((l) => l.classList.remove("is-active"));
@@ -971,9 +999,8 @@ function initNavbar() {
     });
   });
 
-  // Highlight nav link based on scroll position
   window.addEventListener("scroll", () => {
-    const sections = ["beranda", "kursus-pilihan", "dashboard", "tabel-praktik"];
+    const sections = ["beranda", "keunggulan", "kursus-pilihan", "tabel-praktik"];
     const scrollPos = window.scrollY + 120;
 
     for (const secId of sections) {
@@ -986,7 +1013,7 @@ function initNavbar() {
             const href = l.getAttribute("href");
             if (href === "#" + secId) {
               l.classList.add("is-active");
-            } else if (!l.hasAttribute("data-switch-cat")) {
+            } else {
               l.classList.remove("is-active");
             }
           });
@@ -998,35 +1025,18 @@ function initNavbar() {
 }
 
 /* ==========================================================
-   CATEGORY SWITCHER (ACCOUNTING vs HR)
-   Synchronizes Navbar Pills, Dashboard Switcher & Nav Links
+   COURSE PAGE: MODULE SWITCHER & URL SYNC
    ========================================================== */
 function initCategorySwitcher() {
-  // 1. Dashboard switcher bar buttons
-  const dashSwitchAcc = $("#dashSwitchAcc");
-  const dashSwitchHr = $("#dashSwitchHr");
-  if (dashSwitchAcc) dashSwitchAcc.addEventListener("click", () => selectCategory("accounting"));
-  if (dashSwitchHr) dashSwitchHr.addEventListener("click", () => selectCategory("hr"));
-
-  // 2. Navbar pill buttons
   const catBtnAccounting = $("#catBtnAccounting");
   const catBtnHr = $("#catBtnHr");
-  if (catBtnAccounting) catBtnAccounting.addEventListener("click", () => selectCategory("accounting"));
-  if (catBtnHr) catBtnHr.addEventListener("click", () => selectCategory("hr"));
 
-  // 3. Any link or button with [data-switch-cat]
-  $$("[data-switch-cat]").forEach((el) => {
-    el.addEventListener("click", () => {
-      const cat = el.getAttribute("data-switch-cat");
-      if (cat) {
-        selectCategory(cat);
-        const dashSec = $("#dashboard");
-        if (dashSec) {
-          dashSec.scrollIntoView({ behavior: "smooth" });
-        }
-      }
-    });
-  });
+  if (catBtnAccounting) {
+    catBtnAccounting.addEventListener("click", () => selectCategory("accounting"));
+  }
+  if (catBtnHr) {
+    catBtnHr.addEventListener("click", () => selectCategory("hr"));
+  }
 }
 
 function selectCategory(cat) {
@@ -1036,9 +1046,35 @@ function selectCategory(cat) {
   currentCategory = cat;
   activeFormulaIndex = 0;
 
+  // Update URL without full page reload
+  try {
+    const url = new URL(window.location);
+    url.searchParams.set("module", cat);
+    window.history.pushState({}, "", url);
+  } catch (e) {}
+
+  updateCategoryUI(cat);
+
+  // Clear search and rerender
+  const searchInput = $("#sidebarSearchInput");
+  const clearBtn = $("#searchClearBtn");
+  if (searchInput) searchInput.value = "";
+  if (clearBtn) clearBtn.hidden = true;
+
+  renderSidebarList("");
+  renderFormulaDetail(0);
+
+  // Close sidebar drawer on mobile
+  const sidebar = $("#dashboardSidebar");
+  if (sidebar && window.innerWidth <= 900) {
+    sidebar.classList.remove("is-open");
+  }
+}
+
+function updateCategoryUI(cat) {
   const isAcc = cat === "accounting";
 
-  // Update navbar pills
+  // Navbar module buttons
   const catBtnAccounting = $("#catBtnAccounting");
   const catBtnHr = $("#catBtnHr");
   if (catBtnAccounting) {
@@ -1050,13 +1086,7 @@ function selectCategory(cat) {
     catBtnHr.setAttribute("aria-selected", String(!isAcc));
   }
 
-  // Update dashboard switcher buttons
-  const dashSwitchAcc = $("#dashSwitchAcc");
-  const dashSwitchHr = $("#dashSwitchHr");
-  if (dashSwitchAcc) dashSwitchAcc.classList.toggle("is-active", isAcc);
-  if (dashSwitchHr) dashSwitchHr.classList.toggle("is-active", !isAcc);
-
-  // Update banner copy
+  // Banner & Sidebar label
   const bannerTag = $("#bannerTagText");
   const bannerTitle = $("#bannerTitle");
   const bannerDesc = $("#bannerDesc");
@@ -1073,20 +1103,10 @@ function selectCategory(cat) {
     if (bannerDesc) bannerDesc.textContent = "Kumpulan formula esensial untuk manajemen absensi, database karyawan, masa kerja pensiun, dan payroll dengan simulasi Google Sheets langsung.";
     if (sidebarCategoryLabel) sidebarCategoryLabel.textContent = "MODUL HR";
   }
-
-  // Reset search
-  const searchInput = $("#sidebarSearchInput");
-  const clearBtn = $("#searchClearBtn");
-  if (searchInput) searchInput.value = "";
-  if (clearBtn) clearBtn.hidden = true;
-
-  // Re-render
-  renderSidebarList("");
-  renderFormulaDetail(0);
 }
 
 /* ==========================================================
-   FEATURE: REAL-TIME STICKY SIDEBAR SEARCH FILTER
+   COURSE PAGE: SIDEBAR SEARCH FILTER (REAL-TIME)
    ========================================================== */
 function initSidebarSearch() {
   const searchInput = $("#sidebarSearchInput");
@@ -1108,6 +1128,20 @@ function initSidebarSearch() {
       clearBtn.hidden = true;
       searchInput.focus();
       renderSidebarList("");
+    });
+  }
+}
+
+/* ==========================================================
+   COURSE PAGE: MOBILE SIDEBAR TOGGLE
+   ========================================================== */
+function initSidebarMobileToggle() {
+  const toggleBtn = $("#sidebarToggle");
+  const sidebar = $("#dashboardSidebar");
+
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("is-open");
     });
   }
 }
@@ -1152,6 +1186,10 @@ function renderSidebarList(filterText = "") {
 
       btn.addEventListener("click", () => {
         selectFormula(index);
+        const sidebar = $("#dashboardSidebar");
+        if (sidebar && window.innerWidth <= 900) {
+          sidebar.classList.remove("is-open");
+        }
       });
 
       container.appendChild(btn);
@@ -1386,22 +1424,15 @@ function renderFormulaDetail(index) {
   if (btnPrev && index > 0) {
     btnPrev.addEventListener("click", () => {
       selectFormula(index - 1);
-      scrollToStageTop();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
 
   if (btnNext && index < 14) {
     btnNext.addEventListener("click", () => {
       selectFormula(index + 1);
-      scrollToStageTop();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
-  }
-}
-
-function scrollToStageTop() {
-  const stage = $("#dashboard");
-  if (stage) {
-    stage.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
 
@@ -1444,7 +1475,7 @@ async function copyFormulaText(textToCopy, btnElement) {
 }
 
 /* ==========================================================
-   INTERACTIVE PRACTICE DEMO (TRIM + PROPER)
+   INTERACTIVE PRACTICE DEMO (TRIM + PROPER ON LANDING)
    ========================================================== */
 function initPracticeDemo() {
   const btn = $("#btnTestClean");
@@ -1460,7 +1491,6 @@ function initPracticeDemo() {
     cells.forEach((cell) => {
       const rawText = cell.getAttribute("data-raw") || cell.textContent;
       if (isCleaned) {
-        // Simulasi TRIM & PROPER
         const trimmed = rawText.trim();
         const proper = trimmed.replace(/\b\w/g, (char) => char.toUpperCase());
         cell.textContent = proper;
@@ -1567,9 +1597,7 @@ function initAnimatedFavicon() {
       link.href = canvas.toDataURL("image/png");
       link.type = "image/png";
       frame++;
-    } catch (e) {
-      // Ignored if canvas toDataURL is blocked by browser security
-    }
+    } catch (e) {}
   }
 
   draw();

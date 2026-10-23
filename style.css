@@ -2109,3 +2109,83 @@ html.dark-mode .figma-table th {
     height: 320px;
   }
 }
+
+
+/* ==========================================================
+   12. MULTI-PAGE STYLING (COURSE WORKBENCH & NAV PILLS)
+   ========================================================== */
+.navbar--course {
+  border-bottom: 1px solid var(--c-border);
+}
+
+.brand-back-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--c-sage-card);
+  color: var(--c-primary);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  margin-left: 10px;
+}
+
+.brand-back-pill:hover {
+  background: var(--c-primary);
+  color: #ffffff;
+  border-color: var(--c-primary);
+  transform: translateX(-2px);
+}
+
+.sidebar-mobile-toggle {
+  display: none;
+}
+
+.course-main {
+  padding: 32px 0 60px;
+  min-height: calc(100vh - var(--nav-h) - 100px);
+}
+
+.footer-dark--compact {
+  padding: 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-dark--compact .footer-bottom {
+  border-top: none;
+  padding-top: 0;
+}
+
+.nav-course-btn {
+  font-weight: 700;
+}
+
+.course-cta-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .sidebar-mobile-toggle {
+    display: inline-flex;
+  }
+  .page-course .sidebar {
+    position: fixed;
+    top: var(--nav-h);
+    left: 0;
+    bottom: 0;
+    width: 320px;
+    z-index: 150;
+    max-height: none;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.35);
+  }
+  .page-course .sidebar.is-open {
+    transform: translateX(0);
+  }
+}

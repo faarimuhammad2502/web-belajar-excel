@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dashboard Interaktif Belajar 30 Rumus Excel Terpenting untuk Accounting & HR dengan Simulasi Live Google Sheets, Dark Mode, Pencarian Cepat, dan Studi Kasus Riil." />
+  <title>Dashboard Belajar — Kuasai Excel untuk Accounting &amp; HR</title>
+
+  <!-- Prevent Flash of Unstyled Theme (FOUT) -->
+  <script>
+    try {
+      if (localStorage.getItem("rumus_theme") === "dark") {
+        document.documentElement.classList.add("dark-mode");
+      }
+    } catch(e) {}
+  </script>
+
+  <!-- Favicon -->
+  <link id="favicon" rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='14' fill='%2319734D'/%3E%3Cpath d='M20 18l8 14-8 14h7l4.5-9 4.5 9h7l-8-14 8-14h-7l-4.5 9-4.5-9z' fill='%23fff'/%3E%3C/svg%3E" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page-course">
+
+  <!-- ================= 1. DASHBOARD TOPBAR ================= -->
+  <header class="navbar navbar--course" id="navbar">
+    <div class="container navbar__inner">
+      <div class="navbar__brand-group">
+        <a href="index.html" class="brand" aria-label="Kembali ke beranda">
+          <span class="brand__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="4"/>
+              <path d="M3 9h18M3 15h18M9 3v18"/>
+            </svg>
+          </span>
+          <span class="brand__title">rumus <span class="brand__dot">•</span></span>
+        </a>
+        <a href="index.html" class="brand-back-pill" title="Kembali ke Halaman Depan">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Beranda</span>
+        </a>
+      </div>
+
+      <!-- Module Switcher Pill (ACCOUNTING vs HR) -->
+      <div class="category-nav" role="tablist" aria-label="Pilih Modul Aktif">
+        <button class="category-btn is-active" id="catBtnAccounting" role="tab" aria-selected="true" data-category="accounting" title="Buka Modul Accounting (15 Rumus)">
+          <span>💰 ACCOUNTING</span>
+          <span class="count-tag">15</span>
+        </button>
+        <button class="category-btn" id="catBtnHr" role="tab" aria-selected="false" data-category="hr" title="Buka Modul HR (15 Rumus)">
+          <span>👥 HR</span>
+          <span class="count-tag">15</span>
+        </button>
+      </div>
+
+      <!-- Actions: Dark Mode & Mobile Sidebar Toggle -->
+      <div class="navbar__actions">
+        <!-- Dark Mode Toggle Button -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Ubah tema tampilan (Terang / Gelap)" title="Ubah tema (Terang / Gelap)">
+          <span class="theme-icon theme-icon--sun">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          </span>
+          <span class="theme-icon theme-icon--moon">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </span>
+          <span class="theme-label" id="themeLabelText">Mode Gelap</span>
+        </button>
+
+        <!-- Mobile Sidebar Toggle -->
+        <button class="btn btn--outline btn--sm sidebar-mobile-toggle" id="sidebarToggle" aria-label="Buka daftar rumus">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+          <span>Daftar Rumus</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 2. MAIN DASHBOARD WORKBENCH ================= -->
+  <main class="course-main">
+    <div class="container dashboard-layout">
+      
+      <!-- ================= LEFT SIDEBAR (STICKY SEARCH + FORMULA LIST) ================= -->
+      <aside class="sidebar" id="dashboardSidebar">
+        <!-- Sticky Search Header -->
+        <div class="sidebar__top-sticky">
+          <div class="sidebar__header">
+            <div class="sidebar__title-wrap">
+              <span class="sidebar__subtitle" id="sidebarCategoryLabel">MODUL ACCOUNTING</span>
+              <h1 class="sidebar__title">Katalog Rumus</h1>
+            </div>
+            <span class="sidebar__counter" id="formulaCounter">15 Materi</span>
+          </div>
+
+          <!-- Sticky Search Bar -->
+          <div class="sidebar-search">
+            <div class="sidebar-search__wrapper">
+              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+              </svg>
+              <input 
+                type="search" 
+                id="sidebarSearchInput" 
+                class="sidebar-search__input" 
+                placeholder="Cari rumus (contoh: VLOOKUP)..." 
+                aria-label="Cari rumus di sidebar" 
+                autocomplete="off"
+              />
+              <button type="button" id="searchClearBtn" class="search-clear-btn" aria-label="Hapus pencarian" hidden>×</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formula List Container (Scrollable) -->
+        <nav class="sidebar__list" id="formulaSidebarList" role="tablist" aria-orientation="vertical">
+          <!-- Populated by script.js -->
+        </nav>
+
+        <!-- Sidebar Footer Tip -->
+        <div class="sidebar__footer">
+          <div class="tip-card">
+            <div class="tip-card__icon">📊</div>
+            <div class="tip-card__text">
+              <strong>Simulasi Google Sheets:</strong>
+              <p>Pilih rumus di atas untuk membuka sintaks dan live spreadsheet di sebelah kanan.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ================= RIGHT CONTENT AREA ================= -->
+      <section class="content-stage" id="contentStage">
+        <!-- Overview Banner -->
+        <div class="content-banner" id="moduleBanner">
+          <div class="content-banner__text">
+            <div class="tag-label">
+              <span class="tag-label__bar"></span>
+              <span id="bannerTagText">BIDANG KEUANGAN, AKUNTANSI &amp; PELAPORAN</span>
+            </div>
+            <h2 class="content-banner__title" id="bannerTitle">Dashboard Rumus Excel Accounting</h2>
+            <p class="content-banner__desc" id="bannerDesc">
+              Panduan lengkap formula finansial, otomatisasi pembukuan, evaluasi proyek, dan pelaporan keuangan dengan simulasi Google Sheets langsung.
+            </p>
+          </div>
+          <div class="content-banner__stats">
+            <div class="stat-pill">
+              <strong id="statActiveNum">01</strong>
+              <span>Rumus Aktif</span>
+            </div>
+            <div class="stat-pill">
+              <strong style="color: #0F9D58;">LIVE</strong>
+              <span>Sheets Ready</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formula Detail Container (Dynamic Content) -->
+        <article class="formula-view" id="formulaDetailContainer">
+          <!-- Populated by script.js -->
+        </article>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ================= 3. FOOTER ================= -->
+  <footer class="footer-dark footer-dark--compact">
+    <div class="container footer-dark__inner">
+      <div class="footer-bottom">
+        <p>© 2026 Rumus. Semua hak dilindungi.</p>
+        <p>Dibuat untuk pembelajaran kolaboratif Faari &amp; Saudara.</p>
+        <p><a href="index.html" style="color: var(--c-lime); text-decoration: underline;">Kembali ke Halaman Depan ↗</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Pop-up -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- JavaScript Bundle -->
+  <script src="script.js"></script>
+</body>
+</html>
