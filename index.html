@@ -3,20 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Dashboard Interaktif Belajar 30 Rumus Excel Terpenting untuk Accounting & HR dengan Simulasi Live Google Sheets, Dark Mode, Pencarian Cepat, dan Tombol Salin Rumus." />
-  <title>rumus • — Master Excel Accounting &amp; HR (Live Sheets Simulation)</title>
+  <meta name="description" content="Platform Belajar 30 Rumus Excel Terpenting untuk Accounting & HR dengan Simulasi Live Google Sheets, Dark Mode, Pencarian Cepat, dan Studi Kasus Riil." />
+  <title>rumus • — Kuasai Excel untuk Accounting &amp; HR</title>
 
-  <!-- Prevent Flash of Unstyled Theme (FOUT): Baca preferensi tema sebelum render halaman -->
+  <!-- Prevent Flash of Unstyled Theme (FOUT) -->
   <script>
-    (function() {
-      const savedTheme = localStorage.getItem("rumus_theme");
-      if (savedTheme === "dark") {
+    try {
+      if (localStorage.getItem("rumus_theme") === "dark") {
         document.documentElement.classList.add("dark-mode");
       }
-    })();
+    } catch(e) {}
   </script>
 
-  <!-- Animated Favicon Canvas Target -->
+  <!-- Favicon -->
   <link id="favicon" rel="icon" type="image/svg+xml"
     href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='14' fill='%2319734D'/%3E%3Cpath d='M20 18l8 14-8 14h7l4.5-9 4.5 9h7l-8-14 8-14h-7l-4.5 9-4.5-9z' fill='%23fff'/%3E%3C/svg%3E" />
 
@@ -29,11 +28,10 @@
 </head>
 <body>
 
-  <!-- ================= TOP NAVIGATION ================= -->
-  <header class="topbar">
-    <div class="topbar__inner">
-      <!-- Left: Brand Logo & Title -->
-      <div class="topbar__left">
+  <!-- ================= 1. TOP NAVBAR LENGKAP ================= -->
+  <header class="navbar" id="navbar">
+    <div class="container navbar__inner">
+      <div class="navbar__brand-group">
         <a href="#beranda" class="brand" aria-label="rumus • kembali ke beranda">
           <span class="brand__icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -43,151 +41,546 @@
           </span>
           <span class="brand__title">rumus <span class="brand__dot">•</span></span>
         </a>
-        <span class="brand__badge">Live Sheets V2.2</span>
       </div>
 
-      <!-- Center: Main Module Category Switcher (ACCOUNTING vs HR) -->
-      <nav class="category-nav" role="tablist" aria-label="Kategori Utama Modul">
-        <button class="category-btn is-active" id="catBtnAccounting" role="tab" aria-selected="true" aria-controls="contentStage" data-category="accounting">
-          <svg class="cat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-          </svg>
-          <span>ACCOUNTING</span>
-          <span class="count-tag">15 Rumus</span>
-        </button>
-
-        <button class="category-btn" id="catBtnHr" role="tab" aria-selected="false" aria-controls="contentStage" data-category="hr">
-          <svg class="cat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-          </svg>
-          <span>HR (HUMAN RESOURCES)</span>
-          <span class="count-tag">15 Rumus</span>
-        </button>
+      <!-- Menu Navigasi Utama -->
+      <nav class="nav-links" id="mainNavMenu" aria-label="Navigasi Menu Utama">
+        <a href="#beranda" class="nav-link is-active">Beranda</a>
+        <a href="#kursus-pilihan" class="nav-link">Kursus Pilihan</a>
+        <a href="#dashboard" class="nav-link" data-switch-cat="accounting">Modul Accounting</a>
+        <a href="#dashboard" class="nav-link" data-switch-cat="hr">Modul HR</a>
+        <a href="#tabel-praktik" class="nav-link">Tabel Praktik</a>
       </nav>
 
-      <!-- Right: Dark Mode Toggle & Mobile Sidebar Button -->
-      <div class="topbar__right">
-        <!-- Feature 2: Dark Mode Toggle Button -->
+      <!-- Module Switcher Pill + Dark Mode Toggle -->
+      <div class="navbar__actions">
+        <!-- Switcher Cepat Kategori Dashboard -->
+        <div class="category-nav" role="tablist" aria-label="Pilih Modul Aktif">
+          <button class="category-btn is-active" id="catBtnAccounting" role="tab" aria-selected="true" data-category="accounting" title="Buka Modul Accounting">
+            <span>ACCOUNTING</span>
+            <span class="count-tag">15</span>
+          </button>
+          <button class="category-btn" id="catBtnHr" role="tab" aria-selected="false" data-category="hr" title="Buka Modul HR">
+            <span>HR</span>
+            <span class="count-tag">15</span>
+          </button>
+        </div>
+
+        <!-- Dark Mode Toggle Button -->
         <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Ubah tema tampilan (Terang / Gelap)" title="Ubah tema (Terang / Gelap)">
           <span class="theme-icon theme-icon--sun">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-              <line x1="1" y1="12" x2="3" y2="12"/>
-              <line x1="21" y1="12" x2="23" y2="12"/>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
             </svg>
           </span>
           <span class="theme-icon theme-icon--moon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
           </span>
           <span class="theme-label" id="themeLabelText">Mode Gelap</span>
         </button>
 
-        <!-- Mobile Drawer Toggle -->
-        <button class="btn btn--outline btn--sm" id="sidebarToggle" aria-label="Buka katalog rumus" title="Buka menu rumus">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          <span>Daftar Rumus</span>
+        <!-- Mobile Menu Toggle Button -->
+        <button class="navbar__toggle" id="navToggle" aria-label="Buka navigasi menu" aria-expanded="false">
+          <span></span><span></span><span></span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- ================= MAIN DASHBOARD CONTAINER ================= -->
-  <main class="dashboard-layout" id="beranda">
-
-    <!-- ================= LEFT SIDEBAR (STICKY SEARCH + FORMULA LIST) ================= -->
-    <aside class="sidebar" id="dashboardSidebar">
-      
-      <!-- Feature 1: Sticky Sidebar Top (Header + Search Bar) -->
-      <div class="sidebar__top-sticky">
-        <div class="sidebar__header">
-          <div class="sidebar__title-wrap">
-            <span class="sidebar__subtitle" id="sidebarCategoryLabel">MODUL ACCOUNTING</span>
-            <h2 class="sidebar__title">Katalog Rumus</h2>
-          </div>
-          <span class="sidebar__counter" id="formulaCounter">15 Materi</span>
-        </div>
-
-        <!-- Sticky Search Input Field -->
-        <div class="sidebar-search">
-          <div class="sidebar-search__wrapper">
-            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-            </svg>
-            <input 
-              type="search" 
-              id="sidebarSearchInput" 
-              class="sidebar-search__input" 
-              placeholder="Cari rumus (contoh: VLOOKUP)..." 
-              aria-label="Cari rumus di sidebar" 
-              autocomplete="off"
-            />
-            <button type="button" id="searchClearBtn" class="search-clear-btn" aria-label="Hapus pencarian" hidden>×</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scrollable Formula Nav Items Container -->
-      <nav class="sidebar__list" id="formulaSidebarList" role="tablist" aria-orientation="vertical">
-        <!-- Injected dynamically via script.js -->
-      </nav>
-
-      <!-- Sidebar Footer Tip -->
-      <div class="sidebar__footer">
-        <div class="tip-card">
-          <div class="tip-card__icon">📊</div>
-          <div class="tip-card__text">
-            <strong>Live Sheets Practice:</strong>
-            <p>Setiap rumus dilengkapi simulasi Google Sheets interaktif yang bisa langsung Anda uji coba &amp; salin.</p>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- ================= RIGHT CONTENT AREA (DYNAMIC DETAIL VIEW) ================= -->
-    <section class="content-stage" id="contentStage">
-      
-      <!-- Top Overview Banner -->
-      <div class="content-banner" id="moduleBanner">
-        <div class="content-banner__text">
+  <main>
+    <!-- ================= 2. HERO SECTION LENGKAP ================= -->
+    <section class="hero" id="beranda">
+      <div class="container hero__inner">
+        <!-- Konten Kiri -->
+        <div class="hero__content">
           <div class="tag-label">
             <span class="tag-label__bar"></span>
-            <span id="bannerTagText">BIDANG KEUANGAN, AKUNTANSI &amp; PELAPORAN</span>
+            <span>AKADEMI EXCEL UNTUK DUNIA KERJA</span>
           </div>
-          <h1 class="content-banner__title" id="bannerTitle">Dashboard Rumus Excel Accounting</h1>
-          <p class="content-banner__desc" id="bannerDesc">
-            Panduan lengkap formula finansial, otomatisasi pembukuan, evaluasi proyek, dan pelaporan keuangan dengan simulasi Google Sheets langsung.
+
+          <h1 class="hero__title">
+            Kuasai Excel untuk <span class="text-highlight">Accounting &amp; HR.</span>
+          </h1>
+
+          <p class="hero__desc">
+            Platform belajar interaktif 30 formula esensial untuk mempermudah pekerjaan sehari-hari di bidang Akuntansi, Keuangan, dan Human Resources dengan simulasi Google Sheets langsung.
           </p>
-        </div>
-        <div class="content-banner__stats">
-          <div class="stat-pill">
-            <strong id="statActiveNum">01</strong>
-            <span>Rumus Terpilih</span>
+
+          <div class="hero__actions">
+            <a href="#dashboard" class="btn btn--primary btn--lg">
+              Mulai Belajar 30 Rumus
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 17L17 7M7 7h10v10"/>
+              </svg>
+            </a>
+            <a href="#dashboard" class="btn btn--outline btn--lg" data-switch-cat="hr">
+              Buka Modul HR
+            </a>
           </div>
-          <div class="stat-pill">
-            <strong style="color: #0F9D58;">LIVE</strong>
-            <span>Sheets Ready</span>
+
+          <div class="hero__subnote">
+            <svg class="check-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+            <span>Tanpa kartu kredit • 30 Formula terapan untuk Faari &amp; Saudara</span>
+          </div>
+        </div>
+
+        <!-- Visual Kanan (Excel Sheet Mockup dengan SUMIF Live) -->
+        <div class="hero__visual-wrap">
+          <div class="badge-sparkle">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+              <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/>
+            </svg>
+            Kecil belajarnya. Besar efeknya.
+          </div>
+
+          <div class="sheet-container">
+            <div class="sheet-card__top">
+              <div class="sheet-card__top-left">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect width="18" height="18" x="3" y="3" rx="2"/>
+                  <path d="M3 9h18M3 15h18M9 3v18"/>
+                </svg>
+                <span>DARI DATA, JADI CERITA.</span>
+              </div>
+              <div class="sheet-card__step">01 / 05</div>
+            </div>
+
+            <!-- Inner Excel Mockup Window -->
+            <div class="excel-win">
+              <div class="excel-win__header">
+                <span class="excel-win__file">Latihan_Penjualan.xlsx</span>
+                <span class="excel-win__saved">Tersimpan ✓</span>
+              </div>
+
+              <div class="excel-win__formula-bar">
+                <span class="cell-id">E8</span>
+                <span class="fx-sym"><em>fx</em></span>
+                <code class="fx-text">=SUMIF(B2:B6;"Jakarta";E2:E6)</code>
+              </div>
+
+              <div class="excel-grid">
+                <div class="excel-row excel-row--col-letters">
+                  <div class="c c--col-0"></div>
+                  <div class="c">B</div><div class="c">C</div><div class="c">D</div><div class="c">E</div>
+                </div>
+
+                <div class="excel-row excel-row--head">
+                  <div class="c c--col-0">1</div>
+                  <div class="c">Kota</div><div class="c">Produk</div><div class="c">Unit</div><div class="c text-right">Penjualan</div>
+                </div>
+
+                <div class="excel-row is-matched">
+                  <div class="c c--col-0">2</div>
+                  <div class="c font-medium">Jakarta</div><div class="c">Laptop</div><div class="c">12</div><div class="c text-right">Rp96.000.000</div>
+                </div>
+                <div class="excel-row">
+                  <div class="c c--col-0">3</div>
+                  <div class="c">Bandung</div><div class="c">Monitor</div><div class="c">18</div><div class="c text-right">Rp45.000.000</div>
+                </div>
+                <div class="excel-row">
+                  <div class="c c--col-0">4</div>
+                  <div class="c">Surabaya</div><div class="c">Laptop</div><div class="c">10</div><div class="c text-right">Rp80.000.000</div>
+                </div>
+                <div class="excel-row is-matched">
+                  <div class="c c--col-0">5</div>
+                  <div class="c font-medium">Jakarta</div><div class="c">Monitor</div><div class="c">24</div><div class="c text-right">Rp60.000.000</div>
+                </div>
+
+                <div class="excel-summary-bar">
+                  <span class="summary-label">Total penjualan Jakarta</span>
+                  <div class="summary-box">
+                    <output id="heroLiveSum">Rp156.000.000</output>
+                  </div>
+                </div>
+
+                <div class="excel-tabs">
+                  <span class="tab-item is-active">Penjualan</span>
+                  <span class="tab-item">Ringkasan</span>
+                  <span class="tab-item tab-plus">+</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="feedback-pill">
+            <span class="feedback-pill__icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </span>
+            <div class="feedback-pill__content">
+              <strong>Rumus tepat. Kerja lebih cepat.</strong>
+              <span>Satu keterampilan baru, hari ini.</span>
+            </div>
           </div>
         </div>
       </div>
-
-      <!-- Active Formula Dynamic View Container (Injected via script.js) -->
-      <article class="formula-view" id="formulaDetailContainer">
-        <!-- Rendered by script.js with .code-block, .copy-btn, and Google Sheets Live Simulation -->
-      </article>
-
     </section>
 
+    <!-- ================= 3. STRIP KEUNGGULAN ================= -->
+    <section class="perks-strip">
+      <div class="container perks-strip__inner">
+        <h2 class="perks__headline">Belajar yang relevan. Kehidupan kerja yang lebih ringan.</h2>
+
+        <div class="perk-item">
+          <div class="perk-item__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+            </svg>
+          </div>
+          <div class="perk-item__text">
+            <strong>30 Rumus Terapan</strong>
+            <span>15 Accounting &amp; 15 HR</span>
+          </div>
+        </div>
+
+        <div class="perk-item">
+          <div class="perk-item__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>
+            </svg>
+          </div>
+          <div class="perk-item__text">
+            <strong>Live Google Sheets</strong>
+            <span>Simulasi langsung di website</span>
+          </div>
+        </div>
+
+        <div class="perk-item">
+          <div class="perk-item__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <div class="perk-item__text">
+            <strong>1-Click Copy Formula</strong>
+            <span>Siap paste ke lembar kerja Excel</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 4. KURSUS PILIHAN (3 CARDS) ================= -->
+    <section class="section-courses" id="kursus-pilihan">
+      <div class="container">
+        <div class="section-head-split">
+          <div>
+            <div class="tag-label">
+              <span class="tag-label__bar"></span>
+              <span>02 / KURSUS PILIHAN</span>
+            </div>
+            <h2 class="section-head-title">Keterampilan baru. Bisa langsung dipakai.</h2>
+          </div>
+          <a href="#dashboard" class="btn btn--outline btn--sm">Lihat Semua 30 Rumus ↗</a>
+        </div>
+
+        <div class="course-cards-grid">
+          <!-- Card 1 -->
+          <article class="course-card">
+            <div class="course-card__preview course-card__preview--sage">
+              <div class="preview-meta">
+                <span>MULAI DARI DASAR</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+              </div>
+              <div class="preview-table">
+                <div class="ptable-head"><span>Produk</span><span>Jumlah</span><span class="text-right">Harga</span></div>
+                <div class="ptable-row"><span>Buku</span><span>25</span><span class="text-right">Rp75.000</span></div>
+                <div class="ptable-row"><span>Pensil</span><span>40</span><span class="text-right">Rp40.000</span></div>
+                <div class="ptable-row ptable-row--total"><span>Total</span><span>65</span><span class="text-right">Rp115.000</span></div>
+              </div>
+            </div>
+            <div class="course-card__body">
+              <div class="card-badges">
+                <span class="badge-level badge-level--green">Pemula</span>
+                <span class="badge-time">Video + latihan</span>
+              </div>
+              <h3 class="course-card__title">Excel dari Nol: Fondasi yang Kuat</h3>
+              <p class="course-card__desc">Kenali lembar kerja, rapikan data, dan kuasai 15 rumus penting untuk administrasi dan akuntansi.</p>
+              <div class="course-card__footer">
+                <span class="course-author">Bersama Nadia Putri</span>
+                <a href="#dashboard" class="course-link">Mulai Belajar ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="course-card">
+            <div class="course-card__preview course-card__preview--dark">
+              <div class="preview-meta">
+                <span>LOGIKA JADI SOLUSI</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+              </div>
+              <div class="preview-center-calc">
+                <div class="preview-formula-huge">=XLOOKUP( )</div>
+                <div class="preview-tags"><span>IF</span><span>SUMIFS</span><span>INDEX MATCH</span></div>
+                <p class="preview-hint">Temukan data. Hemat waktu.</p>
+              </div>
+            </div>
+            <div class="course-card__body">
+              <div class="card-badges">
+                <span class="badge-level badge-level--green">Menengah</span>
+                <span class="badge-time">Video + latihan</span>
+              </div>
+              <h3 class="course-card__title">Rumus Andalan untuk Dunia Kerja</h3>
+              <p class="course-card__desc">Dari IF sampai XLOOKUP dan PMT. Selesaikan kasus administrasi, audit keuangan, dan HR sehari-hari.</p>
+              <div class="course-card__footer">
+                <span class="course-author">Bersama Arif Pratama</span>
+                <a href="#dashboard" class="course-link">Mulai Belajar ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="course-card">
+            <div class="course-card__preview course-card__preview--sage">
+              <div class="preview-meta">
+                <span>DATA JADI WAWASAN</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+              </div>
+              <div class="preview-metrics">
+                <div class="chart-box">
+                  <span class="chart-title">Penjualan Bulanan</span>
+                  <div class="chart-bars">
+                    <div class="cbar" style="height: 40%;"></div>
+                    <div class="cbar" style="height: 70%;"></div>
+                    <div class="cbar" style="height: 60%;"></div>
+                    <div class="cbar" style="height: 90%;"></div>
+                    <div class="cbar cbar--light" style="height: 100%;"></div>
+                  </div>
+                </div>
+                <div class="kpi-box">
+                  <span class="kpi-title">Target Tercapai</span>
+                  <span class="kpi-val">92%</span>
+                  <span class="kpi-sub">↗ 18,5%</span>
+                </div>
+              </div>
+            </div>
+            <div class="course-card__body">
+              <div class="card-badges">
+                <span class="badge-level badge-level--green">Mahir</span>
+                <span class="badge-time">Video + latihan</span>
+              </div>
+              <h3 class="course-card__title">Dasbor Interaktif dengan Excel</h3>
+              <p class="course-card__desc">Bangun laporan visual yang ringkas, interaktif, dan siap presentasi di hadapan jajaran manajemen.</p>
+              <div class="course-card__footer">
+                <span class="course-author">Bersama Nadia Putri</span>
+                <a href="#dashboard" class="course-link">Mulai Belajar ↗</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 5. MAIN DASHBOARD: 30 FORMULA WORKBENCH ================= -->
+    <section class="section-dashboard-wrapper" id="dashboard">
+      <div class="container dashboard-header-area">
+        <div class="tag-label">
+          <span class="tag-label__bar"></span>
+          <span>03 / INTERACTIVE WORKBENCH</span>
+        </div>
+        <h2 class="section-head-title">Dashboard Pembelajaran Excel Interaktif</h2>
+        <p class="section-head-desc">
+          Pilih kategori <strong>ACCOUNTING</strong> atau <strong>HR</strong> di bawah untuk mengeksplorasi sintaks resmi, simulasi tabel, dan praktik di Google Sheets.
+        </p>
+
+        <!-- Kategori Switcher Utama Dashboard -->
+        <div class="dashboard-switcher-bar">
+          <button class="dash-switch-btn is-active" id="dashSwitchAcc" data-category="accounting">
+            <span class="dash-switch-icon">💰</span>
+            <div class="dash-switch-text">
+              <strong>Modul 1: ACCOUNTING &amp; FINANCE</strong>
+              <span>15 Formula Keuangan, Depresiasi, NPV, IRR &amp; Amortisasi</span>
+            </div>
+          </button>
+          <button class="dash-switch-btn" id="dashSwitchHr" data-category="hr">
+            <span class="dash-switch-icon">👥</span>
+            <div class="dash-switch-text">
+              <strong>Modul 2: HUMAN RESOURCES &amp; PAYROLL</strong>
+              <span>15 Formula Absensi, Masa Kerja, Cleansing &amp; Master Gaji</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dashboard Two-Column Container -->
+      <div class="container dashboard-layout">
+        
+        <!-- ================= LEFT SIDEBAR (STICKY SEARCH + FORMULA LIST) ================= -->
+        <aside class="sidebar" id="dashboardSidebar">
+          <!-- Sticky Search Header -->
+          <div class="sidebar__top-sticky">
+            <div class="sidebar__header">
+              <div class="sidebar__title-wrap">
+                <span class="sidebar__subtitle" id="sidebarCategoryLabel">MODUL ACCOUNTING</span>
+                <h3 class="sidebar__title">Katalog Rumus</h3>
+              </div>
+              <span class="sidebar__counter" id="formulaCounter">15 Materi</span>
+            </div>
+
+            <!-- Sticky Search Bar -->
+            <div class="sidebar-search">
+              <div class="sidebar-search__wrapper">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+                <input 
+                  type="search" 
+                  id="sidebarSearchInput" 
+                  class="sidebar-search__input" 
+                  placeholder="Cari rumus (contoh: VLOOKUP)..." 
+                  aria-label="Cari rumus di sidebar" 
+                  autocomplete="off"
+                />
+                <button type="button" id="searchClearBtn" class="search-clear-btn" aria-label="Hapus pencarian" hidden>×</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formula List Container (Scrollable) -->
+          <nav class="sidebar__list" id="formulaSidebarList" role="tablist" aria-orientation="vertical">
+            <!-- Will be populated by script.js, with fallback items below -->
+            <button class="sidebar__item is-active" data-index="0">
+              <span class="item-num">01</span>
+              <div class="item-info"><span class="item-title">SUMIF &amp; SUMIFS</span><span class="item-tag">Rekapitulasi Bersyarat</span></div>
+              <span class="item-arrow">→</span>
+            </button>
+            <button class="sidebar__item" data-index="1">
+              <span class="item-num">02</span>
+              <div class="item-info"><span class="item-title">VLOOKUP &amp; HLOOKUP</span><span class="item-tag">Pencarian Referensi</span></div>
+              <span class="item-arrow">→</span>
+            </button>
+            <button class="sidebar__item" data-index="2">
+              <span class="item-num">03</span>
+              <div class="item-info"><span class="item-title">INDEX &amp; MATCH</span><span class="item-tag">Lookup Dua Arah</span></div>
+              <span class="item-arrow">→</span>
+            </button>
+          </nav>
+
+          <!-- Sidebar Footer Tip -->
+          <div class="sidebar__footer">
+            <div class="tip-card">
+              <div class="tip-card__icon">📊</div>
+              <div class="tip-card__text">
+                <strong>Simulasi Live:</strong>
+                <p>Klik nama rumus untuk membuka sintaks dan live Google Sheets di area kanan.</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- ================= RIGHT CONTENT AREA ================= -->
+        <section class="content-stage" id="contentStage">
+          <!-- Overview Banner -->
+          <div class="content-banner" id="moduleBanner">
+            <div class="content-banner__text">
+              <div class="tag-label">
+                <span class="tag-label__bar"></span>
+                <span id="bannerTagText">BIDANG KEUANGAN, AKUNTANSI &amp; PELAPORAN</span>
+              </div>
+              <h2 class="content-banner__title" id="bannerTitle">Dashboard Rumus Excel Accounting</h2>
+              <p class="content-banner__desc" id="bannerDesc">
+                Panduan lengkap formula finansial, otomatisasi pembukuan, evaluasi proyek, dan pelaporan keuangan dengan simulasi Google Sheets langsung.
+              </p>
+            </div>
+            <div class="content-banner__stats">
+              <div class="stat-pill">
+                <strong id="statActiveNum">01</strong>
+                <span>Rumus Terpilih</span>
+              </div>
+              <div class="stat-pill">
+                <strong style="color: #0F9D58;">LIVE</strong>
+                <span>Sheets Ready</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formula Detail Container (Dynamic Content) -->
+          <article class="formula-view" id="formulaDetailContainer">
+            <!-- Injected by script.js -->
+          </article>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- ================= 6. TABEL PRAKTIK NYATA (STANDALONE PRACTICE) ================= -->
+    <section class="section-practice" id="tabel-praktik">
+      <div class="container">
+        <div class="section-head-split">
+          <div>
+            <div class="tag-label">
+              <span class="tag-label__bar"></span>
+              <span>04 / STUDI KASUS KANTOR</span>
+            </div>
+            <h2 class="section-head-title">Tabel Praktik Tambahan Mandiri</h2>
+          </div>
+        </div>
+
+        <div class="practice-container">
+          <!-- Tabel Praktik Keuangan: Catatan Transaksi -->
+          <div class="practice-block">
+            <div class="practice-block__header">
+              <div>
+                <span class="practice-chip">KEUANGAN 01</span>
+                <h3 class="practice-title">Catatan Transaksi Operasional</h3>
+                <p class="practice-desc">Latihan langsung rumus <code>=SUMIF()</code> untuk menghitung total biaya per kategori.</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="figma-table">
+                <thead>
+                  <tr>
+                    <th>No. Invoice</th><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th class="text-right">Nominal (Rp)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td class="font-mono">INV-2610-01</td><td>01/10/2026</td><td><span class="status-tag status-tag--blue">Biaya Marketing</span></td><td>Iklan Instagram</td><td class="text-right font-mono font-semibold">5.000.000</td></tr>
+                  <tr><td class="font-mono">INV-2610-02</td><td>03/10/2026</td><td><span class="status-tag status-tag--amber">Operasional</span></td><td>Listrik &amp; Internet</td><td class="text-right font-mono font-semibold">2.500.000</td></tr>
+                  <tr><td class="font-mono">INV-2610-04</td><td>10/10/2026</td><td><span class="status-tag status-tag--green">Gaji Karyawan</span></td><td>Pembayaran Gaji Staf</td><td class="text-right font-mono font-semibold">45.000.000</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tabel Praktik HR: Cleansing Data -->
+          <div class="practice-block">
+            <div class="practice-block__header">
+              <div>
+                <span class="practice-chip">HR 01</span>
+                <h3 class="practice-title">Database Mentah Karyawan (Cleansing Test)</h3>
+                <p class="practice-desc">Tekan tombol di bawah untuk melihat live demo pembersihan spasi dan huruf kapital.</p>
+              </div>
+              <button class="btn btn--outline btn--sm" id="btnTestClean">✨ Uji TRIM + PROPER</button>
+            </div>
+            <div class="table-responsive">
+              <table class="figma-table" id="testEmployeeTable">
+                <thead>
+                  <tr><th>ID Karyawan</th><th>Nama Depan</th><th>Nama Belakang</th><th>Tanggal Masuk</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="font-mono">EMP-101</td><td><code class="raw-cell" data-raw=" muhammad ">" muhammad "</code></td><td><code class="raw-cell" data-raw=" faari ">" faari "</code></td><td>15/01/2022</td></tr>
+                  <tr><td class="font-mono">EMP-102</td><td><code class="raw-cell" data-raw=" andi">" andi"</code></td><td><code class="raw-cell" data-raw="Budi ">"Budi "</code></td><td>01/03/2020</td></tr>
+                  <tr><td class="font-mono">EMP-103</td><td><code class="raw-cell" data-raw=" reza">" reza"</code></td><td><code class="raw-cell" data-raw=" rahardian ">" rahardian "</code></td><td>20/02/2019</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- ================= FOOTER ================= -->
+  <!-- ================= 7. FOOTER DARK ================= -->
   <footer class="footer-dark" id="footer">
     <div class="container footer-dark__inner">
       <div class="footer-grid">
@@ -206,27 +599,25 @@
             Platform pembelajaran formula Excel terapan untuk profesional Accounting, Finance, dan Human Resources dengan simulasi Google Sheets langsung.
           </p>
 
-          <a href="mailto:halo@rumus.academy" class="footer-email">
-            halo@rumus.academy ↗
-          </a>
+          <a href="mailto:halo@rumus.academy" class="footer-email">halo@rumus.academy ↗</a>
         </div>
 
         <div class="footer-links-group">
           <div class="footer-col">
             <h4 class="footer-col__title">Kategori Modul</h4>
             <ul class="footer-col__list">
-              <li><a href="#" class="switch-to-acc">Accounting &amp; Finance (15 Rumus)</a></li>
-              <li><a href="#" class="switch-to-hr">Human Resources &amp; Payroll (15 Rumus)</a></li>
-              <li><a href="#dashboardSidebar">Katalog Lengkap</a></li>
+              <li><a href="#dashboard" data-switch-cat="accounting">Accounting (15 Rumus)</a></li>
+              <li><a href="#dashboard" data-switch-cat="hr">HR &amp; Payroll (15 Rumus)</a></li>
+              <li><a href="#tabel-praktik">Tabel Praktik Mandiri</a></li>
             </ul>
           </div>
 
           <div class="footer-col">
-            <h4 class="footer-col__title">Simulasi &amp; Praktik</h4>
+            <h4 class="footer-col__title">Simulasi &amp; Tools</h4>
             <ul class="footer-col__list">
-              <li><a href="https://docs.google.com/spreadsheets/create" target="_blank" rel="noopener">Buka Google Sheets Baru</a></li>
-              <li><a href="#formulaDetailContainer">Coba Live Simulator</a></li>
-              <li><a href="#">Template Latihan Excel</a></li>
+              <li><a href="https://docs.google.com/spreadsheets/create" target="_blank" rel="noopener">Buka Google Sheets Baru ↗</a></li>
+              <li><a href="#dashboard">Live Interactive Simulator</a></li>
+              <li><a href="#kursus-pilihan">Kursus Pilihan</a></li>
             </ul>
           </div>
 

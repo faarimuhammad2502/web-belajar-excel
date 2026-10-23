@@ -881,28 +881,39 @@ const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
 /* ==========================================================
-   INITIALIZATION ON DOM LOAD
+   INITIALIZATION ON DOM LOAD (DEFENSIVE & FAIL-SAFE)
    ========================================================== */
 document.addEventListener("DOMContentLoaded", () => {
-  initTheme();
-  initAnimatedFavicon();
-  initCategorySwitcher();
-  initSidebarSearch();
-  initSidebarToggleMobile();
-  initFooterCategoryLinks();
+  // 1. Render data SEGERA agar UI tidak pernah blank jika ada script pendukung yg error
+  try {
+    renderSidebarList();
+    renderFormulaDetail(0);
+  } catch (err) {
+    console.error("Gagal melakukan render awal formula:", err);
+  }
 
-  // Render awal data
-  renderSidebarList();
-  renderFormulaDetail(0);
+  // 2. Inisialisasi setiap modul fitur secara independen dengan try/catch
+  try { initTheme(); } catch (e) { console.error("Gagal inisialisasi tema:", e); }
+  try { initNavbar(); } catch (e) { console.error("Gagal inisialisasi navbar:", e); }
+  try { initCategorySwitcher(); } catch (e) { console.error("Gagal inisialisasi kategori switcher:", e); }
+  try { initSidebarSearch(); } catch (e) { console.error("Gagal inisialisasi search:", e); }
+  try { initPracticeDemo(); } catch (e) { console.error("Gagal inisialisasi demo praktik:", e); }
+  try { initAnimatedFavicon(); } catch (e) { console.error("Gagal inisialisasi favicon canvas:", e); }
 });
 
 /* ==========================================================
-   FEATURE 2: PERSISTENT DARK MODE LOGIC
+   FEATURE: PERSISTENT DARK MODE LOGIC
    ========================================================== */
 function initTheme() {
   const themeToggleBtn = $("#themeToggleBtn");
+  let savedTheme = null;
 
-  const savedTheme = localStorage.getItem("rumus_theme");
+  try {
+    savedTheme = localStorage.getItem("rumus_theme");
+  } catch (e) {
+    console.warn("localStorage tidak dapat diakses:", e);
+  }
+
   const systemPrefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   const isDark = savedTheme === "dark" || (!savedTheme && systemPrefersDark);
 
@@ -913,8 +924,10 @@ function initTheme() {
       const currentlyDark = document.body.classList.contains("dark-mode");
       const nextThemeIsDark = !currentlyDark;
       applyTheme(nextThemeIsDark);
-      
-      localStorage.setItem("rumus_theme", nextThemeIsDark ? "dark" : "light");
+
+      try {
+        localStorage.setItem("rumus_theme", nextThemeIsDark ? "dark" : "light");
+      } catch (e) {}
 
       showToast(nextThemeIsDark ? "Mode Gelap diaktifkan 🌙" : "Mode Terang diaktifkan ☀️");
     });
@@ -925,16 +938,155 @@ function applyTheme(isDark) {
   if (isDark) {
     document.documentElement.classList.add("dark-mode");
     document.body.classList.add("dark-mode");
-    if ($("#themeLabelText")) $("#themeLabelText").textContent = "Mode Terang";
+    const label = $("#themeLabelText");
+    if (label) label.textContent = "Mode Terang";
   } else {
     document.documentElement.classList.remove("dark-mode");
     document.body.classList.remove("dark-mode");
-    if ($("#themeLabelText")) $("#themeLabelText").textContent = "Mode Gelap";
+    const label = $("#themeLabelText");
+    if (label) label.textContent = "Mode Gelap";
   }
 }
 
 /* ==========================================================
-   FEATURE 1: REAL-TIME STICKY SIDEBAR SEARCH FILTER
+   NAVBAR & MOBILE DRAWER NAVIGATION
+   ========================================================== */
+function initNavbar() {
+  const navToggle = $("#navToggle");
+  const mainNavMenu = $("#mainNavMenu");
+
+  if (navToggle && mainNavMenu) {
+    navToggle.addEventListener("click", () => {
+      const isOpen = mainNavMenu.classList.toggle("is-open");
+      navToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+  }
+
+  // Smooth scroll & close mobile menu on nav click
+  $$(".nav-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      $$(".nav-link").forEach((l) => l.classList.remove("is-active"));
+      link.classList.add("is-active");
+      if (mainNavMenu) mainNavMenu.classList.remove("is-open");
+    });
+  });
+
+  // Highlight nav link based on scroll position
+  window.addEventListener("scroll", () => {
+    const sections = ["beranda", "kursus-pilihan", "dashboard", "tabel-praktik"];
+    const scrollPos = window.scrollY + 120;
+
+    for (const secId of sections) {
+      const secEl = document.getElementById(secId);
+      if (secEl) {
+        const top = secEl.offsetTop;
+        const height = secEl.offsetHeight;
+        if (scrollPos >= top && scrollPos < top + height) {
+          $$(".nav-link").forEach((l) => {
+            const href = l.getAttribute("href");
+            if (href === "#" + secId) {
+              l.classList.add("is-active");
+            } else if (!l.hasAttribute("data-switch-cat")) {
+              l.classList.remove("is-active");
+            }
+          });
+          break;
+        }
+      }
+    }
+  }, { passive: true });
+}
+
+/* ==========================================================
+   CATEGORY SWITCHER (ACCOUNTING vs HR)
+   Synchronizes Navbar Pills, Dashboard Switcher & Nav Links
+   ========================================================== */
+function initCategorySwitcher() {
+  // 1. Dashboard switcher bar buttons
+  const dashSwitchAcc = $("#dashSwitchAcc");
+  const dashSwitchHr = $("#dashSwitchHr");
+  if (dashSwitchAcc) dashSwitchAcc.addEventListener("click", () => selectCategory("accounting"));
+  if (dashSwitchHr) dashSwitchHr.addEventListener("click", () => selectCategory("hr"));
+
+  // 2. Navbar pill buttons
+  const catBtnAccounting = $("#catBtnAccounting");
+  const catBtnHr = $("#catBtnHr");
+  if (catBtnAccounting) catBtnAccounting.addEventListener("click", () => selectCategory("accounting"));
+  if (catBtnHr) catBtnHr.addEventListener("click", () => selectCategory("hr"));
+
+  // 3. Any link or button with [data-switch-cat]
+  $$("[data-switch-cat]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const cat = el.getAttribute("data-switch-cat");
+      if (cat) {
+        selectCategory(cat);
+        const dashSec = $("#dashboard");
+        if (dashSec) {
+          dashSec.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    });
+  });
+}
+
+function selectCategory(cat) {
+  if (currentCategory === cat && $("#formulaDetailContainer").children.length > 0) {
+    return;
+  }
+  currentCategory = cat;
+  activeFormulaIndex = 0;
+
+  const isAcc = cat === "accounting";
+
+  // Update navbar pills
+  const catBtnAccounting = $("#catBtnAccounting");
+  const catBtnHr = $("#catBtnHr");
+  if (catBtnAccounting) {
+    catBtnAccounting.classList.toggle("is-active", isAcc);
+    catBtnAccounting.setAttribute("aria-selected", String(isAcc));
+  }
+  if (catBtnHr) {
+    catBtnHr.classList.toggle("is-active", !isAcc);
+    catBtnHr.setAttribute("aria-selected", String(!isAcc));
+  }
+
+  // Update dashboard switcher buttons
+  const dashSwitchAcc = $("#dashSwitchAcc");
+  const dashSwitchHr = $("#dashSwitchHr");
+  if (dashSwitchAcc) dashSwitchAcc.classList.toggle("is-active", isAcc);
+  if (dashSwitchHr) dashSwitchHr.classList.toggle("is-active", !isAcc);
+
+  // Update banner copy
+  const bannerTag = $("#bannerTagText");
+  const bannerTitle = $("#bannerTitle");
+  const bannerDesc = $("#bannerDesc");
+  const sidebarCategoryLabel = $("#sidebarCategoryLabel");
+
+  if (isAcc) {
+    if (bannerTag) bannerTag.textContent = "BIDANG KEUANGAN, AKUNTANSI & PELAPORAN";
+    if (bannerTitle) bannerTitle.textContent = "Dashboard Rumus Excel Accounting";
+    if (bannerDesc) bannerDesc.textContent = "Panduan lengkap formula finansial, otomatisasi pembukuan, evaluasi proyek, dan pelaporan keuangan dengan simulasi Google Sheets langsung.";
+    if (sidebarCategoryLabel) sidebarCategoryLabel.textContent = "MODUL ACCOUNTING";
+  } else {
+    if (bannerTag) bannerTag.textContent = "BIDANG HUMAN RESOURCES, PAYROLL & DATA KERJA";
+    if (bannerTitle) bannerTitle.textContent = "Dashboard Rumus Excel HR (Human Resources)";
+    if (bannerDesc) bannerDesc.textContent = "Kumpulan formula esensial untuk manajemen absensi, database karyawan, masa kerja pensiun, dan payroll dengan simulasi Google Sheets langsung.";
+    if (sidebarCategoryLabel) sidebarCategoryLabel.textContent = "MODUL HR";
+  }
+
+  // Reset search
+  const searchInput = $("#sidebarSearchInput");
+  const clearBtn = $("#searchClearBtn");
+  if (searchInput) searchInput.value = "";
+  if (clearBtn) clearBtn.hidden = true;
+
+  // Re-render
+  renderSidebarList("");
+  renderFormulaDetail(0);
+}
+
+/* ==========================================================
+   FEATURE: REAL-TIME STICKY SIDEBAR SEARCH FILTER
    ========================================================== */
 function initSidebarSearch() {
   const searchInput = $("#sidebarSearchInput");
@@ -944,11 +1096,9 @@ function initSidebarSearch() {
 
   searchInput.addEventListener("input", (e) => {
     const query = e.target.value;
-    
     if (clearBtn) {
       clearBtn.hidden = !query;
     }
-
     renderSidebarList(query);
   });
 
@@ -963,91 +1113,6 @@ function initSidebarSearch() {
 }
 
 /* ==========================================================
-   FEATURE 3: COPY TO CLIPBOARD BUTTON LOGIC
-   ========================================================== */
-async function copyFormulaText(textToCopy, btnElement) {
-  if (!textToCopy) return;
-
-  try {
-    await navigator.clipboard.writeText(textToCopy);
-  } catch (err) {
-    const textarea = document.createElement("textarea");
-    textarea.value = textToCopy;
-    textarea.style.position = "fixed";
-    textarea.style.opacity = "0";
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand("copy");
-    textarea.remove();
-  }
-
-  if (btnElement) {
-    const originalHTML = btnElement.innerHTML;
-    btnElement.classList.add("is-copied");
-    btnElement.innerHTML = `
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
-      <span>Copied! ✅</span>
-    `;
-
-    setTimeout(() => {
-      btnElement.classList.remove("is-copied");
-      btnElement.innerHTML = originalHTML;
-    }, 2000);
-  }
-
-  showToast("Formula berhasil disalin ke clipboard! 📋");
-}
-
-/* ==========================================================
-   CATEGORY SWITCHER (ACCOUNTING vs HR)
-   ========================================================== */
-function initCategorySwitcher() {
-  const btnAcc = $("#catBtnAccounting");
-  const btnHr = $("#catBtnHr");
-
-  if (btnAcc) btnAcc.addEventListener("click", () => selectCategory("accounting"));
-  if (btnHr) btnHr.addEventListener("click", () => selectCategory("hr"));
-}
-
-function selectCategory(cat) {
-  if (currentCategory === cat) return;
-  currentCategory = cat;
-  activeFormulaIndex = 0;
-
-  const isAcc = cat === "accounting";
-  $("#catBtnAccounting").classList.toggle("is-active", isAcc);
-  $("#catBtnAccounting").setAttribute("aria-selected", String(isAcc));
-  $("#catBtnHr").classList.toggle("is-active", !isAcc);
-  $("#catBtnHr").setAttribute("aria-selected", String(!isAcc));
-
-  if (isAcc) {
-    $("#bannerTagText").textContent = "BIDANG KEUANGAN, AKUNTANSI & PELAPORAN";
-    $("#bannerTitle").textContent = "Dashboard Rumus Excel Accounting";
-    $("#bannerDesc").textContent = "Panduan lengkap formula finansial, otomatisasi pembukuan, evaluasi proyek, dan pelaporan keuangan dengan simulasi Google Sheets langsung.";
-    $("#sidebarCategoryLabel").textContent = "MODUL ACCOUNTING";
-  } else {
-    $("#bannerTagText").textContent = "BIDANG HUMAN RESOURCES, PAYROLL & DATA KERJA";
-    $("#bannerTitle").textContent = "Dashboard Rumus Excel HR (Human Resources)";
-    $("#bannerDesc").textContent = "Kumpulan formula esensial untuk manajemen absensi, database karyawan, masa kerja pensiun, dan payroll dengan simulasi Google Sheets langsung.";
-    $("#sidebarCategoryLabel").textContent = "MODUL HR";
-  }
-
-  const searchInput = $("#sidebarSearchInput");
-  const clearBtn = $("#searchClearBtn");
-  if (searchInput) searchInput.value = "";
-  if (clearBtn) clearBtn.hidden = true;
-
-  renderSidebarList("");
-  renderFormulaDetail(0);
-
-  if (window.innerWidth <= 960) {
-    $("#dashboardSidebar").classList.remove("is-open");
-  }
-}
-
-/* ==========================================================
    RENDER SIDEBAR ITEMS WITH REAL-TIME FILTER
    ========================================================== */
 function renderSidebarList(filterText = "") {
@@ -1055,14 +1120,15 @@ function renderSidebarList(filterText = "") {
   if (!container) return;
   container.innerHTML = "";
 
-  const list = DATABASE[currentCategory];
+  const list = DATABASE[currentCategory] || [];
   const query = filterText.toLowerCase().trim();
 
   let visibleCount = 0;
 
   list.forEach((item, index) => {
-    const matches = !query || 
-      item.title.toLowerCase().includes(query) || 
+    const matches =
+      !query ||
+      item.title.toLowerCase().includes(query) ||
       item.tag.toLowerCase().includes(query) ||
       item.number.includes(query) ||
       item.purpose.toLowerCase().includes(query);
@@ -1086,9 +1152,6 @@ function renderSidebarList(filterText = "") {
 
       btn.addEventListener("click", () => {
         selectFormula(index);
-        if (window.innerWidth <= 960) {
-          $("#dashboardSidebar").classList.remove("is-open");
-        }
       });
 
       container.appendChild(btn);
@@ -1099,7 +1162,7 @@ function renderSidebarList(filterText = "") {
     container.innerHTML = `
       <div class="sidebar-no-results">
         <span>🔍</span>
-        <p>Tidak ada rumus dengan kata kunci <strong>"${filterText}"</strong></p>
+        <p>Tidak ada rumus dengan kata kunci <strong>"${escapeHTML(filterText)}"</strong></p>
       </div>
     `;
   }
@@ -1125,15 +1188,11 @@ function selectFormula(index) {
 
 /* ==========================================================
    RENDER FORMULA DETAIL VIEW (RIGHT CONTENT STAGE)
-   Includes:
-   - Header & Purpose
-   - Syntax with .code-block & .copy-btn
-   - Practical Case Simulation Table
-   - FEATURE 4: Live Google Sheets Interactive Simulation Section
-   - Pro Tips & Step Navigation
    ========================================================== */
 function renderFormulaDetail(index) {
-  const item = DATABASE[currentCategory][index];
+  const categoryData = DATABASE[currentCategory];
+  if (!categoryData) return;
+  const item = categoryData[index];
   if (!item) return;
 
   const statNum = $("#statActiveNum");
@@ -1142,7 +1201,7 @@ function renderFormulaDetail(index) {
   const container = $("#formulaDetailContainer");
   if (!container) return;
 
-  // 1. Generate Syntax Blocks wrapped with .code-block and .copy-btn
+  // 1. Generate Syntax Blocks
   const syntaxHTML = item.syntax.map((s) => `
     <div class="syntax-card">
       <span class="syntax-card__label">${s.label}</span>
@@ -1169,10 +1228,10 @@ function renderFormulaDetail(index) {
   `).join("");
 
   // 3. Generate Interactive Google Sheets Embed URL
-  // Gunakan Google Sheets pubhtml template atau embed sandbox yang aman
+  const safeTitleSlug = item.title.replace(/[^a-zA-Z0-9]/g, '_');
   const sheetsEmbedUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vT-RUMUS-EXCEL-SIMULATION-${currentCategory.toUpperCase()}-${item.number}/pubhtml?widget=true&headers=false`;
 
-  // 4. Render Whole Detail View
+  // 4. Render Entire Detail View
   container.innerHTML = `
     <!-- Detail Header -->
     <header class="view-header">
@@ -1185,11 +1244,12 @@ function renderFormulaDetail(index) {
       <p class="view-subtitle">${item.purpose}</p>
     </header>
 
-    <!-- Section 1: Sintaks & Formula Code Block -->
+    <!-- Section 1: Sintaks Resmi -->
     <section class="view-card" aria-labelledby="syntaxCardHeading">
       <div class="view-card__head">
         <span class="card-chip">SINTAKS RESMI</span>
         <h3 class="card-title" id="syntaxCardHeading">Bentuk Penulisan Rumus Excel</h3>
+        <p class="card-desc">Gunakan tombol Copy di sebelah kanan untuk menyalin format formula secara langsung.</p>
       </div>
       <div class="syntax-grid">
         ${syntaxHTML}
@@ -1241,31 +1301,27 @@ function renderFormulaDetail(index) {
       </p>
     </section>
 
-    <!-- ==========================================================
-         FEATURE 4: LIVE GOOGLE SHEETS SIMULATION SECTION
-         ========================================================== -->
+    <!-- Section 3: Live Google Sheets Simulation -->
     <section class="sheets-sim-card" aria-labelledby="sheetsHeading">
       <div class="view-card__head">
         <span class="card-chip card-chip--sheets">SIMULASI LANGSUNG</span>
         <h3 class="card-title" id="sheetsHeading">Praktik Interaktif di Google Sheets</h3>
         <p class="card-desc">
-          Lakukan eksperimen rumus <strong>${item.title}</strong> langsung di lembar kerja Google Sheets di bawah ini. Ubah angka atau kriteria untuk melihat kalkulasinya secara realtime!
+          Lakukan eksperimen rumus <strong>${item.title}</strong> langsung di lembar kerja Google Sheets di bawah ini. Anda dapat mengklik dan melihat kalkulasinya secara realtime!
         </p>
       </div>
 
-      <!-- Responsive Google Sheets Frame Container -->
       <div class="sheets-frame-wrapper">
         <div class="sheets-mock-toolbar">
           <div class="sheets-mock-title">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D58">
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/>
             </svg>
-            <span>Latihan_${currentCategory.toUpperCase()}_${item.number}_${item.title.replace(/[^a-zA-Z0-9]/g, '_')}.xlsx</span>
+            <span>Latihan_${currentCategory.toUpperCase()}_${item.number}_${safeTitleSlug}.xlsx</span>
           </div>
           <span class="sheets-mock-status">Tersinkronisasi Otomatis ✓</span>
         </div>
 
-        <!-- The Responsive Embedded Google Sheets iframe -->
         <iframe 
           class="sheets-iframe" 
           src="${sheetsEmbedUrl}" 
@@ -1275,7 +1331,6 @@ function renderFormulaDetail(index) {
         </iframe>
       </div>
 
-      <!-- Action Bar with Google Sheets CTA Button (#0F9D58) -->
       <div class="sheets-action-bar">
         <div class="sheets-action-info">
           <strong>Ingin mengedit di akun Google Anda sendiri?</strong>
@@ -1304,7 +1359,7 @@ function renderFormulaDetail(index) {
       </div>
     </section>
 
-    <!-- Navigasi Bawah (Sebelumnya & Selanjutnya) -->
+    <!-- Section 5: Navigasi Urutan Rumus -->
     <nav class="view-nav-buttons" aria-label="Navigasi urutan rumus">
       <button class="btn btn--outline btn--sm" id="btnPrevFormula" ${index === 0 ? "disabled" : ""}>
         ← Rumus Sebelumnya
@@ -1316,7 +1371,7 @@ function renderFormulaDetail(index) {
     </nav>
   `;
 
-  // Attach event listener ke seluruh tombol .copy-btn yang baru dirender
+  // Attach event listener copy buttons
   $$(".copy-btn", container).forEach((btn) => {
     btn.addEventListener("click", () => {
       const text = btn.dataset.copy;
@@ -1344,16 +1399,90 @@ function renderFormulaDetail(index) {
 }
 
 function scrollToStageTop() {
-  const stage = $("#contentStage");
+  const stage = $("#dashboard");
   if (stage) {
     stage.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
 
 /* ==========================================================
+   FEATURE: COPY TO CLIPBOARD BUTTON LOGIC
+   ========================================================== */
+async function copyFormulaText(textToCopy, btnElement) {
+  if (!textToCopy) return;
+
+  try {
+    await navigator.clipboard.writeText(textToCopy);
+  } catch (err) {
+    const textarea = document.createElement("textarea");
+    textarea.value = textToCopy;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    textarea.remove();
+  }
+
+  if (btnElement) {
+    const originalHTML = btnElement.innerHTML;
+    btnElement.classList.add("is-copied");
+    btnElement.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span>Copied! ✅</span>
+    `;
+
+    setTimeout(() => {
+      btnElement.classList.remove("is-copied");
+      btnElement.innerHTML = originalHTML;
+    }, 2000);
+  }
+
+  showToast("Formula berhasil disalin ke clipboard! 📋");
+}
+
+/* ==========================================================
+   INTERACTIVE PRACTICE DEMO (TRIM + PROPER)
+   ========================================================== */
+function initPracticeDemo() {
+  const btn = $("#btnTestClean");
+  const table = $("#testEmployeeTable");
+  if (!btn || !table) return;
+
+  let isCleaned = false;
+
+  btn.addEventListener("click", () => {
+    isCleaned = !isCleaned;
+    const cells = $$(".raw-cell", table);
+
+    cells.forEach((cell) => {
+      const rawText = cell.getAttribute("data-raw") || cell.textContent;
+      if (isCleaned) {
+        // Simulasi TRIM & PROPER
+        const trimmed = rawText.trim();
+        const proper = trimmed.replace(/\b\w/g, (char) => char.toUpperCase());
+        cell.textContent = proper;
+        cell.style.color = "var(--c-primary)";
+        cell.style.fontWeight = "700";
+      } else {
+        cell.textContent = `"${rawText}"`;
+        cell.style.color = "";
+        cell.style.fontWeight = "";
+      }
+    });
+
+    btn.textContent = isCleaned ? "↺ Reset Data Mentah" : "✨ Uji TRIM + PROPER";
+    showToast(isCleaned ? "Data berhasil dibersihkan dengan TRIM & PROPER! ✨" : "Data dikembalikan ke format mentah berantakan.");
+  });
+}
+
+/* ==========================================================
    HELPER UTILITIES: HTML ESCAPING
    ========================================================== */
 function escapeHTML(str) {
+  if (!str) return "";
   return str
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -1361,6 +1490,7 @@ function escapeHTML(str) {
 }
 
 function escapeAttribute(str) {
+  if (!str) return "";
   return str
     .replace(/&/g, "&amp;")
     .replace(/"/g, "&quot;")
@@ -1379,43 +1509,6 @@ function showToast(message) {
   showToast.timer = setTimeout(() => {
     toast.classList.remove("is-visible");
   }, 2400);
-}
-
-/* ==========================================================
-   RESPONSIVE MOBILE SIDEBAR DRAWER TOGGLE
-   ========================================================== */
-function initSidebarToggleMobile() {
-  const toggle = $("#sidebarToggle");
-  const sidebar = $("#dashboardSidebar");
-  if (!toggle || !sidebar) return;
-
-  toggle.addEventListener("click", () => {
-    sidebar.classList.toggle("is-open");
-  });
-}
-
-/* ==========================================================
-   FOOTER CATEGORY LINK HANDLERS
-   ========================================================== */
-function initFooterCategoryLinks() {
-  const accLink = $(".switch-to-acc");
-  const hrLink = $(".switch-to-hr");
-
-  if (accLink) {
-    accLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      selectCategory("accounting");
-      scrollToStageTop();
-    });
-  }
-
-  if (hrLink) {
-    hrLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      selectCategory("hr");
-      scrollToStageTop();
-    });
-  }
 }
 
 /* ==========================================================
@@ -1445,36 +1538,40 @@ function initAnimatedFavicon() {
   }
 
   function draw() {
-    const pulse = (Math.sin(frame / 7) + 1) / 2;
-    const scale = 0.85 + pulse * 0.15;
-    const s = size * scale;
-    const offset = (size - s) / 2;
+    try {
+      const pulse = (Math.sin(frame / 7) + 1) / 2;
+      const scale = 0.85 + pulse * 0.15;
+      const s = size * scale;
+      const offset = (size - s) / 2;
 
-    ctx.clearRect(0, 0, size, size);
+      ctx.clearRect(0, 0, size, size);
 
-    ctx.fillStyle = currentCategory === "accounting" ? "#19734D" : "#123D2E";
-    roundRect(offset, offset, s, s, s * 0.22);
-    ctx.fill();
+      ctx.fillStyle = currentCategory === "accounting" ? "#19734D" : "#123D2E";
+      roundRect(offset, offset, s, s, s * 0.22);
+      ctx.fill();
 
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
-    ctx.lineWidth = 2;
-    for (let i = 1; i < 3; i++) {
-      const p = offset + (s / 3) * i;
-      ctx.beginPath(); ctx.moveTo(offset + 4, p); ctx.lineTo(offset + s - 4, p); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(p, offset + 4); ctx.lineTo(p, offset + s - 4); ctx.stroke();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+      ctx.lineWidth = 2;
+      for (let i = 1; i < 3; i++) {
+        const p = offset + (s / 3) * i;
+        ctx.beginPath(); ctx.moveTo(offset + 4, p); ctx.lineTo(offset + s - 4, p); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(p, offset + 4); ctx.lineTo(p, offset + s - 4); ctx.stroke();
+      }
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `800 ${Math.round(s * 0.58)}px 'Plus Jakarta Sans', system-ui, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("X", size / 2, size / 2 + s * 0.04);
+
+      link.href = canvas.toDataURL("image/png");
+      link.type = "image/png";
+      frame++;
+    } catch (e) {
+      // Ignored if canvas toDataURL is blocked by browser security
     }
-
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = `800 ${Math.round(s * 0.58)}px 'Plus Jakarta Sans', system-ui, sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("X", size / 2, size / 2 + s * 0.04);
-
-    link.href = canvas.toDataURL("image/png");
-    link.type = "image/png";
-    frame++;
   }
 
   draw();
-  if (!reduceMotion) setInterval(draw, 120);
+  if (!reduceMotion) setInterval(draw, 140);
 }
