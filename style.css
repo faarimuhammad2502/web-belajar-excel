@@ -2499,3 +2499,85 @@ html.dark-mode .figma-table th {
     justify-content: center;
   }
 }
+
+
+/* ==========================================================
+   16. EXCEL VS GOOGLE SHEETS SYNTAX NOTICE BANNER
+   ========================================================== */
+.syntax-notice-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 24px;
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: var(--radius-lg);
+  color: #78350f;
+  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.08);
+  margin-bottom: 24px;
+  transition: var(--theme-transition);
+}
+
+.syntax-notice-banner__icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.syntax-notice-banner__content {
+  flex: 1;
+}
+
+.syntax-notice-banner__title {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #92400e;
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+
+.syntax-notice-banner__text {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #78350f;
+  margin: 0;
+}
+
+.syntax-notice-banner__text code {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* Dark Mode Overrides for Syntax Notice Banner */
+html.dark-mode .syntax-notice-banner,
+body.dark-mode .syntax-notice-banner {
+  background: #231c0e;
+  border-color: #5c4415;
+  color: #fef3c7;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+html.dark-mode .syntax-notice-banner__title,
+body.dark-mode .syntax-notice-banner__title {
+  color: #fde047;
+}
+
+html.dark-mode .syntax-notice-banner__text,
+body.dark-mode .syntax-notice-banner__text {
+  color: #fef08a;
+}
+
+html.dark-mode .syntax-notice-banner__text code,
+body.dark-mode .syntax-notice-banner__text code {
+  background: #38280b;
+  border-color: #785a1a;
+  color: #fef08a;
+}
