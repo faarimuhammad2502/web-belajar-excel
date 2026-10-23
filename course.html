@@ -83,18 +83,17 @@
           <span class="theme-label" id="themeLabelText">Mode Gelap</span>
         </button>
 
-        <!-- Mobile Sidebar Toggle -->
-        <button class="btn btn--outline btn--sm sidebar-mobile-toggle" id="sidebarToggle" aria-label="Buka daftar rumus">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-          <span>Daftar Rumus</span>
+        <!-- Mobile Sidebar Hamburger Toggle -->
+        <button class="btn btn--outline btn--sm sidebar-mobile-toggle" id="sidebarToggle" aria-label="Buka menu daftar rumus" aria-expanded="false">
+          <span class="hamburger-icon" aria-hidden="true">☰</span>
+          <span class="toggle-text">Daftar Rumus</span>
         </button>
       </div>
     </div>
   </header>
+
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
 
   <!-- ================= 2. MAIN DASHBOARD WORKBENCH ================= -->
   <main class="course-main">
@@ -102,8 +101,19 @@
       
       <!-- ================= LEFT SIDEBAR (STICKY SEARCH + FORMULA LIST) ================= -->
       <aside class="sidebar" id="dashboardSidebar">
-        <!-- Sticky Search Header -->
+        <!-- Sticky Search Header & Progress Bar -->
         <div class="sidebar__top-sticky">
+          <!-- Progress Tracker (LocalStorage) -->
+          <div id="progress-container" class="progress-box">
+            <div class="progress-box__header">
+              <span class="progress-box__label">Progress Belajar:</span>
+              <span id="progress-text" class="progress-box__count">0/15 Selesai (0%)</span>
+            </div>
+            <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+              <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
           <div class="sidebar__header">
             <div class="sidebar__title-wrap">
               <span class="sidebar__subtitle" id="sidebarCategoryLabel">MODUL ACCOUNTING</span>

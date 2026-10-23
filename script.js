@@ -17,6 +17,16 @@ const DATABASE = {
   accounting: [
     {
       id: "acc-1",
+      quiz: {
+      "question": "Di sebuah laporan kas perusahaan, Anda diminta merekap total beban 'Operasional' khusus untuk cabang 'Surabaya'. Rumus mana yang paling tepat?",
+      "options": [
+            "=SUMIF(Cabang; \"Surabaya\"; Total) + SUMIF(Kategori; \"Operasional\"; Total)",
+            "=SUMIFS(Total; Kategori; \"Operasional\"; Cabang; \"Surabaya\")",
+            "=SUM(Total; \"Operasional\"; \"Surabaya\")"
+      ],
+      "correctIndex": 1,
+      "explanation": "SUMIFS digunakan saat kriteria lebih dari satu. Kolom angka yang dijumlahkan (Total) diletakkan di parameter pertama, diikuti pasangan range kriteria dan syaratnya."
+},
       number: "01",
       title: "SUMIF & SUMIFS",
       tag: "Rekapitulasi Bersyarat",
@@ -52,6 +62,16 @@ const DATABASE = {
     },
     {
       id: "acc-2",
+      quiz: {
+      "question": "Ketika mencari Nama Akun berdasarkan Kode COA di tabel vertikal, mengapa parameter terakhir VLOOKUP disarankan bernilai FALSE?",
+      "options": [
+            "Agar pencarian dilakukan secara eksak (persis sama) dan tidak mengambil data perkiraan terdekat",
+            "Agar rumus mencari data dari arah kanan ke kiri",
+            "Karena rumus VLOOKUP akan otomatis rusak jika diisi TRUE"
+      ],
+      "correctIndex": 0,
+      "explanation": "Parameter FALSE (atau 0) memastikan Excel hanya mengembalikan hasil jika Kode Akun yang dicari benar-benar cocok persis."
+},
       number: "02",
       title: "VLOOKUP & HLOOKUP",
       tag: "Pencarian Referensi",
@@ -87,6 +107,16 @@ const DATABASE = {
     },
     {
       id: "acc-3",
+      quiz: {
+      "question": "Apa keunggulan utama kombinasi INDEX & MATCH dibandingkan VLOOKUP standar pada pemodelan laporan keuangan?",
+      "options": [
+            "Hanya bisa membaca sel yang bernilai mata uang Rupiah",
+            "Mampu mengambil data di sebelah kiri kolom kunci dan tidak rusak saat ada kolom baru disisipkan",
+            "Otomatis menghitung depresiasi aset tanpa rumus tambahan"
+      ],
+      "correctIndex": 1,
+      "explanation": "MATCH mencari posisi baris secara dinamis, sehingga INDEX dapat mengambil data di kolom mana pun (termasuk di kiri kolom kunci) tanpa terpaku indeks kolom tetap."
+},
       number: "03",
       title: "INDEX & MATCH",
       tag: "Lookup Lanjutan Dua Arah",
@@ -116,6 +146,16 @@ const DATABASE = {
     },
     {
       id: "acc-4",
+      quiz: {
+      "question": "Jika fasilitas pinjaman bank memiliki bunga tahunan 12% dan dicicil bulanan selama 3 tahun (36 bulan), input suku bunga pada fungsi =PMT(...) yang benar adalah:",
+      "options": [
+            "12% langsung tanpa pembagian",
+            "12%/12 (atau 1% per bulan)",
+            "12% * 36 bulan"
+      ],
+      "correctIndex": 1,
+      "explanation": "Periode cicilan bersifat bulanan, maka suku bunga tahunan wajib dibagi 12 agar satuan waktu bunga dan periode angsuran konsisten."
+},
       number: "04",
       title: "PMT",
       tag: "Amortisasi & Kredit",
@@ -143,6 +183,16 @@ const DATABASE = {
     },
     {
       id: "acc-5",
+      quiz: {
+      "question": "Manajemen ingin mengetahui berapa nilai uang saat ini (Present Value) dari rencana arus kas masuk Rp50.000.000 di 3 tahun mendatang dengan diskonto 8%. Rumus apa yang digunakan?",
+      "options": [
+            "=FV(8%; 3; 0; 50000000)",
+            "=PV(8%; 3; 0; -50000000)",
+            "=PMT(8%; 3; -50000000)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Fungsi PV (Present Value) mendiskontokan nilai masa depan (FV) ke nilai saat ini berdasarkan suku bunga diskonto per tahun."
+},
       number: "05",
       title: "PV & FV",
       tag: "Nilai Waktu Uang (TVM)",
@@ -175,6 +225,16 @@ const DATABASE = {
     },
     {
       id: "acc-6",
+      quiz: {
+      "question": "Bagaimana cara penulisan rumus NPV yang benar jika modal investasi awal tahun ke-0 sebesar Rp100 juta dan arus kas tahun ke-1 s/d 3 ada di sel B2:B4?",
+      "options": [
+            "=NPV(rate; B1:B4) di mana B1 adalah modal awal tahun ke-0",
+            "=-100000000 + NPV(rate; B2:B4) (Investasi awal di luar fungsi NPV)",
+            "=NPV(rate; -100000000; B2:B4)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Fungsi NPV di Excel mengasumsikan arus kas pertama terjadi di akhir periode 1. Oleh karena itu, pengeluaran awal tahun ke-0 harus dijumlahkan di luar rumus NPV."
+},
       number: "06",
       title: "NPV",
       tag: "Studi Kelayakan Investasi",
@@ -202,6 +262,16 @@ const DATABASE = {
     },
     {
       id: "acc-7",
+      quiz: {
+      "question": "Sebuah proposal rencana ekspansi bisnis dinyatakan layak diterima menurut kriteria IRR jika:",
+      "options": [
+            "Nilai IRR lebih rendah dari biaya modal (cost of capital)",
+            "Nilai IRR menghasilkan persis angka 0%",
+            "Nilai IRR lebih tinggi dari tingkat pengembalian modal minimal (hurdle rate / WACC)"
+      ],
+      "correctIndex": 2,
+      "explanation": "Proyek dikatakan menguntungkan jika tingkat pengembalian internal (IRR) melebihi biaya modal yang harus dikeluarkan perusahaan untuk mendanainya."
+},
       number: "07",
       title: "IRR",
       tag: "Tingkat Pengembalian Internal",
@@ -229,6 +299,16 @@ const DATABASE = {
     },
     {
       id: "acc-8",
+      quiz: {
+      "question": "Perusahaan membeli mesin pabrik Rp100 juta dengan nilai sisa Rp10 juta dan umur 5 tahun. Jika menggunakan metode Garis Lurus (SLN), berapa beban penyusutan per tahun?",
+      "options": [
+            "Rp18.000.000 per tahun secara rata dan konstan",
+            "Rp20.000.000 di tahun pertama lalu menurun",
+            "Rp90.000.000 sekaligus di tahun pertama"
+      ],
+      "correctIndex": 0,
+      "explanation": "Rumus SLN = (Biaya - Nilai Sisa) / Umur = (100 jt - 10 jt) / 5 = Rp18 juta per tahun secara rata/konstan."
+},
       number: "08",
       title: "SLN & SYD",
       tag: "Depresiasi Aset Tetap",
@@ -261,6 +341,16 @@ const DATABASE = {
     },
     {
       id: "acc-9",
+      quiz: {
+      "question": "Faktur tagihan terbit tanggal 15 Januari 2026 dan memiliki termin jatuh tempo di hari terakhir bulan berikutnya (Februari 2026). Rumus yang tepat adalah:",
+      "options": [
+            "=EOMONTH(\"15/01/2026\"; 0)",
+            "=EOMONTH(\"15/01/2026\"; 1)",
+            "=EDATE(\"15/01/2026\"; 30)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Parameter months = 1 pada EOMONTH melompat ke bulan berikutnya dan langsung mengunci tanggal terakhir dari bulan tersebut (28 Februari)."
+},
       number: "09",
       title: "EOMONTH",
       tag: "Jatuh Tempo Akhir Bulan",
@@ -288,6 +378,16 @@ const DATABASE = {
     },
     {
       id: "acc-10",
+      quiz: {
+      "question": "Kapan sebaiknya Anda menggunakan EDATE dibandingkan EOMONTH dalam pembuatan jadwal pembayaran kredit piutang?",
+      "options": [
+            "Ketika tanggal jatuh tempo harus jatuh pada hari kalender yang sama persis di bulan berikutnya (misal tgl 15 tiap bulan)",
+            "Ketika ingin mencari hari kerja terakhir di akhir pekan",
+            "Hanya untuk transaksi valuta asing bank"
+      ],
+      "correctIndex": 0,
+      "explanation": "EDATE mempertahankan nomor tanggal yang sama persis (misal 15 Jan -> 15 Feb), sedangkan EOMONTH selalu menggeser ke hari paling akhir di bulan tersebut."
+},
       number: "10",
       title: "EDATE",
       tag: "Jatuh Tempo Periode",
@@ -315,6 +415,16 @@ const DATABASE = {
     },
     {
       id: "acc-11",
+      quiz: {
+      "question": "Mengapa akuntan lebih memilih =SUBTOTAL(109; Range) daripada =SUM(Range) pada tabel laporan keuangan yang difilter?",
+      "options": [
+            "Karena SUM tidak bisa menjumlahkan angka di atas 100 juta",
+            "Karena SUBTOTAL otomatis mengabaikan baris yang tersembunyi oleh filter, sehingga hasil jumlah selalu sesuai tampilan",
+            "Karena SUBTOTAL otomatis mengubah format teks menjadi mata uang Dollar"
+      ],
+      "correctIndex": 1,
+      "explanation": "Fungsi SUBTOTAL dengan kode fungsi 109 hanya menghitung sel yang tampak (visible cells), menghindari salah hitung saat baris disaring."
+},
       number: "11",
       title: "SUBTOTAL",
       tag: "Otomatisasi Tabel Filter",
@@ -344,6 +454,16 @@ const DATABASE = {
     },
     {
       id: "acc-12",
+      quiz: {
+      "question": "Laporan audit menyatakan status 'Wajar' jika Selisih Kas = 0 DAN Dokumen Pendukung = 'Lengkap'. Rumus logika yang tepat adalah:",
+      "options": [
+            "=IF(AND(A2=0; B2=\"Lengkap\"); \"Wajar\"; \"Perlu Audit\")",
+            "=IF(OR(A2=0; B2=\"Lengkap\"); \"Wajar\"; \"Perlu Audit\")",
+            "=IF(A2=0; \"Wajar\"; IF(B2=\"Lengkap\"; \"Perlu Audit\"))"
+      ],
+      "correctIndex": 0,
+      "explanation": "Fungsi AND mewajibkan KEDUA syarat terpenuhi bersamaan sebelum menghasilkan nilai benar ('Wajar')."
+},
       number: "12",
       title: "IF, AND, OR",
       tag: "Logika Keputusan Keuangan",
@@ -372,6 +492,16 @@ const DATABASE = {
     },
     {
       id: "acc-13",
+      quiz: {
+      "question": "Pada laporan margin laba, pembagian Laba / Penjualan dapat memunculkan error #DIV/0! jika penjualan bernilai 0. Bagaimana cara menanganinya secara elegan?",
+      "options": [
+            "=IFERROR(Laba/Penjualan; 0)",
+            "=ERROR.TYPE(Laba/Penjualan)",
+            "=SUM(Laba; Penjualan)"
+      ],
+      "correctIndex": 0,
+      "explanation": "IFERROR mendeteksi jika formula menghasilkan galat (seperti #DIV/0!) dan menggantinya dengan nilai default alternatif (misalnya angka 0 atau strip '-')."
+},
       number: "13",
       title: "IFERROR",
       tag: "Pencegah Error Laporan",
@@ -399,6 +529,16 @@ const DATABASE = {
     },
     {
       id: "acc-14",
+      quiz: {
+      "question": "Perusahaan memiliki aturan bahwa tagihan desimal selalu dibulatkan ke atas ke bilangan bulat terdekat. Rumus mana yang harus digunakan?",
+      "options": [
+            "=ROUND(Tagihan; 0)",
+            "=ROUNDUP(Tagihan; 0)",
+            "=ROUNDDOWN(Tagihan; 2)"
+      ],
+      "correctIndex": 1,
+      "explanation": "ROUNDUP memaksa pembulatan menjauhi nol ke atas, dan digit 0 mengartikan pembulatan ke satuan integer penuh terdekat."
+},
       number: "14",
       title: "ROUND, ROUNDUP, ROUNDDOWN",
       tag: "Pembulatan Angka Pajak",
@@ -426,6 +566,16 @@ const DATABASE = {
     },
     {
       id: "acc-15",
+      quiz: {
+      "question": "Berapa banyak invoice yang berstatus 'Belum Bayar' dan bernilai di atas Rp10.000.000? Rumus yang tepat:",
+      "options": [
+            "=COUNTIF(Status; \"Belum Bayar\")",
+            "=COUNTIFS(Status; \"Belum Bayar\"; Nominal; \">10000000\")",
+            "=SUMIFS(Nominal; Status; \"Belum Bayar\")"
+      ],
+      "correctIndex": 1,
+      "explanation": "COUNTIFS digunakan untuk menghitung frekuensi atau banyaknya baris transaksi yang memenuhi multi-kriteria secara bersamaan."
+},
       number: "15",
       title: "COUNTIFS",
       tag: "Frekuensi Transaksi",
@@ -459,6 +609,16 @@ const DATABASE = {
   hr: [
     {
       id: "hr-1",
+      quiz: {
+      "question": "Karyawan bergabung sejak 12 Januari 2020. Rumus untuk menghitung masa kerja dalam satuan 'Tahun Penuh' per hari ini adalah:",
+      "options": [
+            "=DATEDIF(Tgl_Masuk; TODAY(); \"Y\")",
+            "=YEAR(TODAY()) - YEAR(Tgl_Masuk)",
+            "=DATEDIF(TODAY(); Tgl_Masuk; \"D\")"
+      ],
+      "correctIndex": 0,
+      "explanation": "Kode 'Y' pada DATEDIF menghitung jumlah selisih tahun secara tepat dengan mempertimbangkan tanggal dan bulan masuk karyawan."
+},
       number: "01",
       title: "DATEDIF",
       tag: "Masa Kerja & Usia",
@@ -486,6 +646,16 @@ const DATABASE = {
     },
     {
       id: "hr-2",
+      quiz: {
+      "question": "Dalam perhitungan gaji staf operasional, apa yang otomatis diabaikan oleh rumus =NETWORKDAYS(Tgl_Mulai; Tgl_Selesai; Libur_Nasional)?",
+      "options": [
+            "Hanya hari libur nasional saja",
+            "Hari Sabtu, hari Minggu, dan tanggal daftar libur nasional yang didaftarkan",
+            "Hanya hari Senin dan Jumat"
+      ],
+      "correctIndex": 1,
+      "explanation": "NETWORKDAYS secara otomatis mengeliminasi akhir pekan standar (Sabtu & Minggu) serta tanggal cuti bersama/libur nasional yang kita masukkan ke parameter holiday."
+},
       number: "02",
       title: "NETWORKDAYS",
       tag: "Hari Kerja Efektif",
@@ -513,6 +683,16 @@ const DATABASE = {
     },
     {
       id: "hr-3",
+      quiz: {
+      "question": "Sebuah cabang ritel beroperasi 6 hari kerja dengan satu-satunya hari libur mingguan adalah hari Jumat. Mengapa NETWORKDAYS.INTL lebih cocok daripada NETWORKDAYS biasa?",
+      "options": [
+            "Karena NETWORKDAYS.INTL mendukung kustomisasi hari libur mingguan dengan kode angka atau string khusus",
+            "Karena NETWORKDAYS.INTL bekerja lebih cepat di laptop lama",
+            "Karena NETWORKDAYS.INTL bisa menghitung lembur malam"
+      ],
+      "correctIndex": 0,
+      "explanation": "NETWORKDAYS.INTL memiliki parameter [weekend] yang fleksibel, misalnya kode 16 untuk libur hanya hari Jumat."
+},
       number: "03",
       title: "NETWORKDAYS.INTL",
       tag: "Hari Kerja Fleksibel / Shift",
@@ -540,6 +720,16 @@ const DATABASE = {
     },
     {
       id: "hr-4",
+      quiz: {
+      "question": "Staf HR mengirimkan surat peringatan (SP) yang mewajibkan karyawan merespons dalam 5 hari kerja efektif setelah tgl surat (sel A2). Rumus jatuh temponya adalah:",
+      "options": [
+            "=A2 + 5",
+            "=WORKDAY(A2; 5; LiburNasional)",
+            "=NETWORKDAYS(A2; 5)"
+      ],
+      "correctIndex": 1,
+      "explanation": "'=A2 + 5' akan menghitung hari kalender termasuk akhir pekan, sedangkan WORKDAY melompati akhir pekan dan libur nasional untuk mendapatkan hari kerja ke-5."
+},
       number: "04",
       title: "WORKDAY",
       tag: "Jadwal Probation & Cuti",
@@ -567,6 +757,16 @@ const DATABASE = {
     },
     {
       id: "hr-5",
+      quiz: {
+      "question": "Bagaimana cara mengubah tanggal absensi '15/10/2026' menjadi nama hari bahasa Indonesia lengkap seperti 'Kamis' secara dinamis?",
+      "options": [
+            "=DAYNAME(A2)",
+            "=TEXT(A2; \"[$-0421]dddd\")",
+            "=PROPER(A2)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Format [$-0421]dddd pada fungsi TEXT memaksa Excel menampilkan nama hari penuh dalam locale Bahasa Indonesia."
+},
       number: "05",
       title: "COUNTIF & COUNTIFS",
       tag: "Rekap Absensi & Kehadiran",
@@ -594,6 +794,16 @@ const DATABASE = {
     },
     {
       id: "hr-6",
+      quiz: {
+      "question": "Saat mengimpor data dari mesin fingerprint, nama karyawan sering memiliki spasi ganda di tengah dan spasi berlebih di awal/akhir nama. Fungsi apa yang membersihkannya?",
+      "options": [
+            "=CLEAN(Nama)",
+            "=TRIM(Nama)",
+            "=SUBSTITUTE(Nama; \" \"; \"\")"
+      ],
+      "correctIndex": 1,
+      "explanation": "TRIM menghapus semua spasi di awal dan akhir teks, serta menyisakan tepat satu spasi tunggal antar kata di tengah teks."
+},
       number: "06",
       title: "TRIM",
       tag: "Pembersihan Data Karyawan",
@@ -621,6 +831,16 @@ const DATABASE = {
     },
     {
       id: "hr-7",
+      quiz: {
+      "question": "Data pelamar kerja tertulis 'muhammad faari ardiansyah' dengan huruf kecil semua. Rumus apa yang merapikannya menjadi 'Muhammad Faari Ardiansyah'?",
+      "options": [
+            "=PROPER(A2)",
+            "=UPPER(A2)",
+            "=CAPITALIZE(A2)"
+      ],
+      "correctIndex": 0,
+      "explanation": "Fungsi PROPER mengubah huruf pertama setiap kata menjadi huruf kapital dan huruf berikutnya menjadi huruf kecil."
+},
       number: "07",
       title: "PROPER, UPPER, LOWER",
       tag: "Standarisasi Format Nama",
@@ -648,6 +868,16 @@ const DATABASE = {
     },
     {
       id: "hr-8",
+      quiz: {
+      "question": "Apa keunggulan utama fungsi =TEXTJOIN(\" - \"; TRUE; Range) dibandingkan rumus CONCATENATE biasa?",
+      "options": [
+            "TEXTJOIN otomatis menerapkan pemisah (delimiter) dan dapat mengabaikan sel yang kosong dalam satu rentang data sekaligus",
+            "TEXTJOIN hanya bisa menggabungkan angka numerik",
+            "TEXTJOIN otomatis menerjemahkan teks ke bahasa asing"
+      ],
+      "correctIndex": 0,
+      "explanation": "TEXTJOIN memungkinkan penggabungan puluhan sel dalam rentang dengan satu pemisah dan opsi mengabaikan sel kosong tanpa perlu merangkai tanda petik berulang-ulang."
+},
       number: "08",
       title: "CONCATENATE & TEXTJOIN",
       tag: "Penggabungan Teks & NIK",
@@ -675,6 +905,16 @@ const DATABASE = {
     },
     {
       id: "hr-9",
+      quiz: {
+      "question": "NIK karyawan adalah 'HRD-2022-045'. Jika kita ingin mengambil 4 digit tahun masuk (angka '2022') yang berada di tengah, rumus mana yang digunakan?",
+      "options": [
+            "=LEFT(NIK; 4)",
+            "=MID(NIK; 5; 4)",
+            "=RIGHT(NIK; 4)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Fungsi MID mengambil teks dari posisi karakter ke-5 sebanyak 4 karakter, sehingga menghasilkan teks '2022'."
+},
       number: "09",
       title: "TODAY & NOW",
       tag: "Tanggal Otomatis Sistem",
@@ -702,6 +942,16 @@ const DATABASE = {
     },
     {
       id: "hr-10",
+      quiz: {
+      "question": "Pada rekap absensi shift di mana sel berisi kode 'H,H,H,I,H,H', bagaimana cara menghitung berapa kali huruf 'H' muncul?",
+      "options": [
+            "=LEN(A2) - LEN(SUBSTITUTE(A2; \"H\"; \"\"))",
+            "=COUNT(A2; \"H\")",
+            "=FIND(\"H\"; A2)"
+      ],
+      "correctIndex": 0,
+      "explanation": "Dengan mengukur panjang teks awal dikurangi panjang teks setelah semua huruf 'H' dihilangkan oleh SUBSTITUTE, kita mendapatkan jumlah kemunculan huruf tersebut."
+},
       number: "10",
       title: "TEXT",
       tag: "Format Tanggal & Rupiah",
@@ -729,6 +979,16 @@ const DATABASE = {
     },
     {
       id: "hr-11",
+      quiz: {
+      "question": "HR ingin menghitung jumlah karyawan divisi 'Marketing' yang memiliki status kontrak 'Tetap'. Rumus yang tepat:",
+      "options": [
+            "=COUNTIF(Divisi; \"Marketing\") + COUNTIF(Status; \"Tetap\")",
+            "=COUNTIFS(Divisi; \"Marketing\"; Status; \"Tetap\")",
+            "=SUMIF(Divisi; \"Marketing\"; Status)"
+      ],
+      "correctIndex": 1,
+      "explanation": "COUNTIFS menghitung baris yang secara simultan memenuhi kedua kriteria: divisi Marketing dan status Tetap."
+},
       number: "11",
       title: "IF & IFS",
       tag: "Golongan Gaji & Evaluasi KPI",
@@ -756,6 +1016,16 @@ const DATABASE = {
     },
     {
       id: "hr-12",
+      quiz: {
+      "question": "Dalam perhitungan insentif KPI, nilai bobot pilar (Bobot 20%, 30%, 50%) harus dikalikan dengan skor aktual karyawan (85, 90, 78) lalu dijumlahkan. Rumus paling ringkas:",
+      "options": [
+            "=SUMPRODUCT(Array_Bobot; Array_Skor)",
+            "=SUM(Array_Bobot * Array_Skor) tanpa formula array",
+            "=PRODUCT(Array_Bobot; Array_Skor)"
+      ],
+      "correctIndex": 0,
+      "explanation": "SUMPRODUCT mengalikan elemen array yang berkesesuaian lalu menjumlahkan seluruh hasil kalinya dalam satu sel tanpa perlu kolom perhitungan bantuan."
+},
       number: "12",
       title: "VLOOKUP (Master Payroll)",
       tag: "Tarik Data Gaji Pokok",
@@ -784,6 +1054,16 @@ const DATABASE = {
     },
     {
       id: "hr-13",
+      quiz: {
+      "question": "Jika data karyawan dicari menggunakan ID dan kita ingin otomatis menampilkan teks 'Karyawan Tidak Ditemukan' jika ID salah, fitur XLOOKUP apa yang dipakai?",
+      "options": [
+            "Harus digabungkan lagi dengan =IFERROR(...)",
+            "Menggunakan parameter bawaan [if_not_found] yang sudah tersedia langsung di dalam rumus XLOOKUP",
+            "Mengubah pencarian menjadi binary search"
+      ],
+      "correctIndex": 1,
+      "explanation": "XLOOKUP memiliki parameter ke-4 bawaan [if_not_found] sehingga tidak memerlukan fungsi IFERROR tambahan."
+},
       number: "13",
       title: "EXACT",
       tag: "Validasi NIK & Duplikasi",
@@ -812,6 +1092,16 @@ const DATABASE = {
     },
     {
       id: "hr-14",
+      quiz: {
+      "question": "Dari 500 baris data absensi yang memiliki banyak nama ganda, bagaimana cara membuat daftar nama karyawan tanpa duplikasi secara dinamis di Excel 365 / Google Sheets?",
+      "options": [
+            "=UNIQUE(Range_Nama)",
+            "=DISTINCT(Range_Nama)",
+            "=REMOVE.DUPLICATES(Range_Nama)"
+      ],
+      "correctIndex": 0,
+      "explanation": "Fungsi array dinamis =UNIQUE(...) langsung mengekstrak entri unik dari sebuah rentang tanpa mengubah data mentah asli."
+},
       number: "14",
       title: "ISBLANK",
       tag: "Cek Kelengkapan Berkas",
@@ -840,6 +1130,16 @@ const DATABASE = {
     },
     {
       id: "hr-15",
+      quiz: {
+      "question": "Ketika menghitung rata-rata jam lembur per divisi dan suatu divisi baru belum memiliki data lembur sama sekali, rumus apa yang mencegah tampilan #DIV/0! pada slip gaji?",
+      "options": [
+            "=IFERROR(Rata_Lembur; 0)",
+            "=CLEAN(Rata_Lembur)",
+            "=ISERROR(Rata_Lembur)"
+      ],
+      "correctIndex": 0,
+      "explanation": "IFERROR membungkus kalkulasi dan jika terjadi pembagian dengan nol atau lookup kosong, otomatis menggantinya dengan nilai default 0."
+},
       number: "15",
       title: "IFERROR (Data Karyawan)",
       tag: "Pembersih Error NIK",
@@ -881,6 +1181,110 @@ const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
 /* ==========================================================
+   PROGRESS TRACKER STORAGE HELPERS (LOCALSTORAGE)
+   ========================================================== */
+function getProgressStorageKey(category = currentCategory) {
+  return "rumus_progress_" + category;
+}
+
+function getCompletedFormulaSet(category = currentCategory) {
+  try {
+    const raw = localStorage.getItem(getProgressStorageKey(category));
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function saveCompletedFormulaSet(set, category = currentCategory) {
+  try {
+    const arr = Array.from(set);
+    localStorage.setItem(getProgressStorageKey(category), JSON.stringify(arr));
+  } catch (e) {
+    console.warn("Gagal menyimpan progress ke localStorage:", e);
+  }
+}
+
+function toggleFormulaCompletion(formulaId) {
+  const completed = getCompletedFormulaSet();
+  const willBeDone = !completed.has(formulaId);
+
+  if (willBeDone) {
+    completed.add(formulaId);
+  } else {
+    completed.delete(formulaId);
+  }
+
+  saveCompletedFormulaSet(completed);
+  updateProgressBarUI();
+  updateSidebarDoneBadges();
+
+  // Update button on current formula detail
+  const btn = $("#markDoneBtn");
+  if (btn && btn.dataset.formulaId === formulaId) {
+    btn.classList.toggle("is-completed", willBeDone);
+    const icon = $(".mark-done-icon", btn);
+    const text = $(".mark-done-text", btn);
+    if (icon) icon.textContent = willBeDone ? "✅" : "○";
+    if (text) text.textContent = willBeDone ? "Sudah Dikuasai ✓" : "Tandai Sudah Dikuasai";
+  }
+
+  const note = $(".completion-note");
+  if (note) {
+    note.textContent = willBeDone
+      ? "Materi ini telah tersimpan dalam progress belajar Anda."
+      : "Klik tombol jika Anda sudah memahami rumus ini.";
+  }
+
+  showToast(willBeDone ? "Hebat! Rumus ditandai sudah dikuasai 🎉" : "Status penguasaan rumus direset.");
+}
+
+function updateProgressBarUI() {
+  const progressText = $("#progress-text");
+  const progressBarFill = $("#progress-bar-fill");
+  const progressTrack = $(".progress-track");
+  if (!progressText || !progressBarFill) return;
+
+  const total = (DATABASE[currentCategory] || []).length || 15;
+  const completedSet = getCompletedFormulaSet();
+  const count = completedSet.size;
+  const pct = Math.round((count / total) * 100);
+
+  progressText.textContent = `${count}/${total} Selesai (${pct}%)`;
+  progressBarFill.style.width = `${pct}%`;
+  if (progressTrack) {
+    progressTrack.setAttribute("aria-valuenow", String(pct));
+  }
+}
+
+function updateSidebarDoneBadges() {
+  const completedSet = getCompletedFormulaSet();
+  $$(".sidebar__item").forEach((itemBtn) => {
+    const idx = parseInt(itemBtn.dataset.index, 10);
+    const item = (DATABASE[currentCategory] || [])[idx];
+    if (!item) return;
+
+    let badge = $(".badge-done", itemBtn);
+    const isDone = completedSet.has(item.id);
+
+    if (isDone) {
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "badge-done";
+        badge.title = "Sudah dikuasai";
+        badge.textContent = "✅";
+        const info = $(".item-info", itemBtn);
+        if (info) info.appendChild(badge);
+      }
+    } else if (badge) {
+      badge.remove();
+    }
+  });
+}
+
+/* ==========================================================
    INITIALIZATION ON DOM LOAD (MULTI-PAGE & URL ROUTING)
    ========================================================== */
 document.addEventListener("DOMContentLoaded", () => {
@@ -910,6 +1314,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Render initial sidebar and detail immediately
       renderSidebarList();
       renderFormulaDetail(0);
+      updateProgressBarUI();
 
       // Initialize course interactive controls
       initCategorySwitcher();
@@ -1063,12 +1468,10 @@ function selectCategory(cat) {
 
   renderSidebarList("");
   renderFormulaDetail(0);
+  updateProgressBarUI();
 
   // Close sidebar drawer on mobile
-  const sidebar = $("#dashboardSidebar");
-  if (sidebar && window.innerWidth <= 900) {
-    sidebar.classList.remove("is-open");
-  }
+  closeSidebarOnMobile();
 }
 
 function updateCategoryUI(cat) {
@@ -1133,21 +1536,42 @@ function initSidebarSearch() {
 }
 
 /* ==========================================================
-   COURSE PAGE: MOBILE SIDEBAR TOGGLE
+   FEATURE 1: MOBILE HAMBURGER MENU & RESPONSIVE SIDEBAR
    ========================================================== */
 function initSidebarMobileToggle() {
   const toggleBtn = $("#sidebarToggle");
   const sidebar = $("#dashboardSidebar");
+  const backdrop = $("#sidebarBackdrop");
 
   if (toggleBtn && sidebar) {
     toggleBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("is-open");
+      const isOpen = sidebar.classList.toggle("is-open");
+      toggleBtn.setAttribute("aria-expanded", String(isOpen));
+      if (backdrop) {
+        backdrop.classList.toggle("is-active", isOpen);
+      }
+    });
+  }
+
+  if (backdrop && sidebar) {
+    backdrop.addEventListener("click", () => {
+      closeSidebarOnMobile();
     });
   }
 }
 
+function closeSidebarOnMobile() {
+  const sidebar = $("#dashboardSidebar");
+  const toggleBtn = $("#sidebarToggle");
+  const backdrop = $("#sidebarBackdrop");
+
+  if (sidebar) sidebar.classList.remove("is-open");
+  if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
+  if (backdrop) backdrop.classList.remove("is-active");
+}
+
 /* ==========================================================
-   RENDER SIDEBAR ITEMS WITH REAL-TIME FILTER
+   RENDER SIDEBAR ITEMS WITH REAL-TIME FILTER & PROGRESS BADGES
    ========================================================== */
 function renderSidebarList(filterText = "") {
   const container = $("#formulaSidebarList");
@@ -1156,6 +1580,7 @@ function renderSidebarList(filterText = "") {
 
   const list = DATABASE[currentCategory] || [];
   const query = filterText.toLowerCase().trim();
+  const completedSet = getCompletedFormulaSet();
 
   let visibleCount = 0;
 
@@ -1169,6 +1594,7 @@ function renderSidebarList(filterText = "") {
 
     if (matches) {
       visibleCount++;
+      const isDone = completedSet.has(item.id);
       const btn = document.createElement("button");
       btn.className = `sidebar__item ${index === activeFormulaIndex ? "is-active" : ""}`;
       btn.setAttribute("role", "tab");
@@ -1180,15 +1606,16 @@ function renderSidebarList(filterText = "") {
         <div class="item-info">
           <span class="item-title">${item.title}</span>
           <span class="item-tag">${item.tag}</span>
+          ${isDone ? '<span class="badge-done" title="Sudah dikuasai">✅</span>' : ''}
         </div>
         <span class="item-arrow" aria-hidden="true">→</span>
       `;
 
       btn.addEventListener("click", () => {
         selectFormula(index);
-        const sidebar = $("#dashboardSidebar");
-        if (sidebar && window.innerWidth <= 900) {
-          sidebar.classList.remove("is-open");
+        // Crucially, automatically close the sidebar overlay if a user clicks any formula menu item while on mobile
+        if (window.innerWidth <= 768) {
+          closeSidebarOnMobile();
         }
       });
 
@@ -1226,6 +1653,13 @@ function selectFormula(index) {
 
 /* ==========================================================
    RENDER FORMULA DETAIL VIEW (RIGHT CONTENT STAGE)
+   INJECTS:
+   1. Syntax & Code block
+   2. Practice Table
+   3. FEATURE 3: INTERACTIVE MINI QUIZ (EXACTLY ABOVE SHEETS)
+   4. Live Google Sheets simulation
+   5. Pro tips
+   6. FEATURE 2: PROGRESS TRACKER "MARK AS DONE" BUTTON
    ========================================================== */
 function renderFormulaDetail(index) {
   const categoryData = DATABASE[currentCategory];
@@ -1238,6 +1672,9 @@ function renderFormulaDetail(index) {
 
   const container = $("#formulaDetailContainer");
   if (!container) return;
+
+  const completedSet = getCompletedFormulaSet();
+  const isDone = completedSet.has(item.id);
 
   // 1. Generate Syntax Blocks
   const syntaxHTML = item.syntax.map((s) => `
@@ -1269,7 +1706,22 @@ function renderFormulaDetail(index) {
   const safeTitleSlug = item.title.replace(/[^a-zA-Z0-9]/g, '_');
   const sheetsEmbedUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vT-RUMUS-EXCEL-SIMULATION-${currentCategory.toUpperCase()}-${item.number}/pubhtml?widget=true&headers=false`;
 
-  // 4. Render Entire Detail View
+  // 4. Generate Quiz HTML (3 Options)
+  const quizObj = item.quiz || {
+    question: "Kapan rumus ini paling tepat digunakan?",
+    options: ["Saat mengolah data terstruktur", "Saat validasi kondisi bersyarat", "Semua jawaban benar"],
+    correctIndex: 2,
+    explanation: "Rumus ini dirancang untuk mempermudah kalkulasi data dan otomatisasi pelaporan di dunia kerja."
+  };
+
+  const quizOptionsHTML = quizObj.options.map((opt, optIdx) => `
+    <button type="button" class="quiz-option-btn" data-option-index="${optIdx}">
+      <span class="option-marker">${String.fromCharCode(65 + optIdx)}</span>
+      <span class="option-text">${escapeHTML(opt)}</span>
+    </button>
+  `).join("");
+
+  // 5. Render Entire Detail View
   container.innerHTML = `
     <!-- Detail Header -->
     <header class="view-header">
@@ -1339,7 +1791,33 @@ function renderFormulaDetail(index) {
       </p>
     </section>
 
-    <!-- Section 3: Live Google Sheets Simulation -->
+    <!-- ==========================================================
+         FEATURE 3: INTERACTIVE MINI QUIZ (EXACTLY ABOVE SHEETS)
+         ========================================================== -->
+    <section class="view-card mini-quiz-container" aria-labelledby="quizHeading">
+      <div class="view-card__head">
+        <div class="quiz-badge-wrap">
+          <span class="card-chip">UJI PEMAHAMAN</span>
+          <span class="quiz-pill">🎯 Mini Kuis Praktik</span>
+        </div>
+        <h3 class="card-title" id="quizHeading">Studi Kasus Cepat: ${escapeHTML(item.title)}</h3>
+        <p class="card-desc">${escapeHTML(quizObj.question)}</p>
+      </div>
+
+      <div class="quiz-options-list" id="quizOptionsList">
+        ${quizOptionsHTML}
+      </div>
+
+      <div class="quiz-feedback-box" id="quizFeedbackBox" hidden>
+        <div class="feedback-indicator">
+          <span class="feedback-icon" id="feedbackIcon">💡</span>
+          <strong class="feedback-title" id="feedbackTitle">Penjelasan Jawaban:</strong>
+        </div>
+        <p class="feedback-text" id="feedbackText">${escapeHTML(quizObj.explanation)}</p>
+      </div>
+    </section>
+
+    <!-- Section 4: Live Google Sheets Simulation -->
     <section class="sheets-sim-card" aria-labelledby="sheetsHeading">
       <div class="view-card__head">
         <span class="card-chip card-chip--sheets">SIMULASI LANGSUNG</span>
@@ -1388,7 +1866,7 @@ function renderFormulaDetail(index) {
       </div>
     </section>
 
-    <!-- Section 4: Tips Praktisi Kantor -->
+    <!-- Section 5: Tips Praktisi Kantor -->
     <section class="tip-banner">
       <div class="tip-banner__icon">💡</div>
       <div class="tip-banner__content">
@@ -1397,7 +1875,18 @@ function renderFormulaDetail(index) {
       </div>
     </section>
 
-    <!-- Section 5: Navigasi Urutan Rumus -->
+    <!-- ==========================================================
+         FEATURE 2: PROGRESS TRACKER (MARK AS DONE BUTTON)
+         ========================================================== -->
+    <div class="formula-completion-bar">
+      <button type="button" class="mark-done-btn ${isDone ? 'is-completed' : ''}" id="markDoneBtn" data-formula-id="${item.id}">
+        <span class="mark-done-icon">${isDone ? '✅' : '○'}</span>
+        <span class="mark-done-text">${isDone ? 'Sudah Dikuasai ✓' : 'Tandai Sudah Dikuasai'}</span>
+      </button>
+      <span class="completion-note">${isDone ? 'Materi ini telah tersimpan dalam progress belajar Anda.' : 'Klik tombol jika Anda sudah memahami rumus ini.'}</span>
+    </div>
+
+    <!-- Section 6: Navigasi Urutan Rumus -->
     <nav class="view-nav-buttons" aria-label="Navigasi urutan rumus">
       <button class="btn btn--outline btn--sm" id="btnPrevFormula" ${index === 0 ? "disabled" : ""}>
         ← Rumus Sebelumnya
@@ -1416,6 +1905,49 @@ function renderFormulaDetail(index) {
       copyFormulaText(text, btn);
     });
   });
+
+  // Attach event listener to Mini Quiz options
+  const quizOptionBtns = $$(".quiz-option-btn", container);
+  const quizFeedbackBox = $("#quizFeedbackBox");
+  const feedbackIcon = $("#feedbackIcon");
+  const feedbackTitle = $("#feedbackTitle");
+
+  quizOptionBtns.forEach((optBtn) => {
+    optBtn.addEventListener("click", () => {
+      const chosenIdx = parseInt(optBtn.dataset.optionIndex, 10);
+      const isCorrect = chosenIdx === quizObj.correctIndex;
+
+      // Lock all option buttons in this quiz
+      quizOptionBtns.forEach((b) => {
+        b.disabled = true;
+      });
+
+      if (isCorrect) {
+        optBtn.classList.add("correct-answer");
+        if (feedbackIcon) feedbackIcon.textContent = "🎉";
+        if (feedbackTitle) feedbackTitle.textContent = "Luar Biasa! Jawaban Anda Benar:";
+      } else {
+        optBtn.classList.add("wrong-answer");
+        // Highlight the correct one so user learns
+        const correctBtn = quizOptionBtns.find((b) => parseInt(b.dataset.optionIndex, 10) === quizObj.correctIndex);
+        if (correctBtn) correctBtn.classList.add("correct-answer");
+        if (feedbackIcon) feedbackIcon.textContent = "❌";
+        if (feedbackTitle) feedbackTitle.textContent = "Kurang Tepat. Berikut Penjelasannya:";
+      }
+
+      if (quizFeedbackBox) {
+        quizFeedbackBox.hidden = false;
+      }
+    });
+  });
+
+  // Attach event listener to Mark as Done Button
+  const markDoneBtn = $("#markDoneBtn");
+  if (markDoneBtn) {
+    markDoneBtn.addEventListener("click", () => {
+      toggleFormulaCompletion(item.id);
+    });
+  }
 
   // Attach event listener navigasi Sebelumnya / Selanjutnya
   const btnPrev = $("#btnPrevFormula");
