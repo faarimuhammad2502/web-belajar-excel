@@ -1743,6 +1743,34 @@ html.dark-mode .figma-table th {
   color: var(--c-sheets);
 }
 
+/* Helper Hint: Read-Only Iframe Notice */
+.sheet-instruction {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--c-text-muted);
+  background: var(--c-surface-subtle);
+  border-bottom: 1px solid var(--c-border-light);
+  padding: 8px 16px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sheet-instruction__icon {
+  font-style: normal;
+  font-size: 13.5px;
+  flex-shrink: 0;
+}
+
+html.dark-mode .sheet-instruction,
+body.dark-mode .sheet-instruction {
+  background: rgba(255, 255, 255, 0.03);
+  color: #9cb1a4;
+  border-bottom-color: var(--c-border);
+}
+
 .sheets-iframe {
   width: 100%;
   height: 400px;

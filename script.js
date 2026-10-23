@@ -1838,6 +1838,11 @@ function renderFormulaDetail(index) {
           <span class="sheets-mock-status">Tersinkronisasi Otomatis ✓</span>
         </div>
 
+        <p class="sheet-instruction">
+          <span class="sheet-instruction__icon">👁️</span>
+          <span>Preview Data (Hanya Lihat). Untuk mengetik dan mempraktikkan rumus, silakan klik tombol &#39;Buka Template&#39; di bawah ini.</span>
+        </p>
+
         <iframe 
           class="sheets-iframe" 
           src="${sheetsEmbedUrl}" 
