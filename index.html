@@ -3,8 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Dashboard Interaktif Belajar 30 Rumus Excel Terpenting untuk Accounting & HR." />
+  <meta name="description" content="Dashboard Interaktif Belajar 30 Rumus Excel Terpenting untuk Accounting & HR dengan Dark Mode, Fitur Pencarian Cepat, dan Tombol Salin Rumus." />
   <title>rumus • — Master Excel Accounting &amp; HR</title>
+
+  <!-- Prevent Flash of Unstyled Theme (FOUT): Baca theme langsung sebelum render -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem("rumus_theme");
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark-mode");
+      }
+    })();
+  </script>
 
   <!-- Animated Favicon Canvas Target -->
   <link id="favicon" rel="icon" type="image/svg+xml"
@@ -22,6 +32,7 @@
   <!-- ================= TOP NAVIGATION ================= -->
   <header class="topbar">
     <div class="topbar__inner">
+      <!-- Left: Brand Logo & Title -->
       <div class="topbar__left">
         <a href="#beranda" class="brand" aria-label="rumus • kembali ke beranda">
           <span class="brand__icon">
@@ -32,12 +43,12 @@
           </span>
           <span class="brand__title">rumus <span class="brand__dot">•</span></span>
         </a>
-        <span class="brand__badge">Dashboard V2.0</span>
+        <span class="brand__badge">Dashboard V2.1</span>
       </div>
 
-      <!-- Category Pill Switcher (ACCOUNTING vs HR) -->
+      <!-- Center: Main Module Category Switcher (ACCOUNTING vs HR) -->
       <nav class="category-nav" role="tablist" aria-label="Kategori Utama Modul">
-        <button class="category-btn is-active" id="catBtnAccounting" role="tab" aria-selected="true" aria-controls="accountingDashboard" data-category="accounting">
+        <button class="category-btn is-active" id="catBtnAccounting" role="tab" aria-selected="true" aria-controls="contentStage" data-category="accounting">
           <svg class="cat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
           </svg>
@@ -45,7 +56,7 @@
           <span class="count-tag">15 Rumus</span>
         </button>
 
-        <button class="category-btn" id="catBtnHr" role="tab" aria-selected="false" aria-controls="hrDashboard" data-category="hr">
+        <button class="category-btn" id="catBtnHr" role="tab" aria-selected="false" aria-controls="contentStage" data-category="hr">
           <svg class="cat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
@@ -54,12 +65,33 @@
         </button>
       </nav>
 
+      <!-- Right: Dark Mode Toggle & Mobile Sidebar Button -->
       <div class="topbar__right">
-        <div class="search-mini">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" id="formulaSearchInput" placeholder="Cari rumus..." aria-label="Cari rumus Excel" />
-        </div>
-        <button class="btn btn--outline btn--sm" id="sidebarToggle" aria-label="Buka daftar rumus">
+        <!-- Feature 2: Dark Mode Toggle Button -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Ubah tema tampilan (Terang / Gelap)" title="Ubah tema (Terang / Gelap)">
+          <span class="theme-icon theme-icon--sun">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          </span>
+          <span class="theme-icon theme-icon--moon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </span>
+          <span class="theme-label" id="themeLabelText">Mode Gelap</span>
+        </button>
+
+        <!-- Mobile Drawer Toggle -->
+        <button class="btn btn--outline btn--sm" id="sidebarToggle" aria-label="Buka katalog rumus" title="Buka menu rumus">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           <span>Daftar Rumus</span>
         </button>
@@ -68,29 +100,52 @@
   </header>
 
   <!-- ================= MAIN DASHBOARD CONTAINER ================= -->
-  <main class="dashboard-layout">
+  <main class="dashboard-layout" id="beranda">
 
-    <!-- ================= LEFT SIDEBAR (VERTICAL SCROLLABLE FORMULA LIST) ================= -->
+    <!-- ================= LEFT SIDEBAR (STICKY SEARCH + FORMULA LIST) ================= -->
     <aside class="sidebar" id="dashboardSidebar">
-      <div class="sidebar__header">
-        <div class="sidebar__title-wrap">
-          <span class="sidebar__subtitle" id="sidebarCategoryLabel">MODUL ACCOUNTING</span>
-          <h2 class="sidebar__title">Katalog Rumus</h2>
+      
+      <!-- Feature 1: Sticky Sidebar Top (Header + Search Bar) -->
+      <div class="sidebar__top-sticky">
+        <div class="sidebar__header">
+          <div class="sidebar__title-wrap">
+            <span class="sidebar__subtitle" id="sidebarCategoryLabel">MODUL ACCOUNTING</span>
+            <h2 class="sidebar__title">Katalog Rumus</h2>
+          </div>
+          <span class="sidebar__counter" id="formulaCounter">15 Materi</span>
         </div>
-        <span class="sidebar__counter" id="formulaCounter">15 Materi</span>
+
+        <!-- Sticky Search Input Field -->
+        <div class="sidebar-search">
+          <div class="sidebar-search__wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input 
+              type="search" 
+              id="sidebarSearchInput" 
+              class="sidebar-search__input" 
+              placeholder="Cari rumus (contoh: VLOOKUP)..." 
+              aria-label="Cari rumus di sidebar" 
+              autocomplete="off"
+            />
+            <button type="button" id="searchClearBtn" class="search-clear-btn" aria-label="Hapus pencarian" hidden>×</button>
+          </div>
+        </div>
       </div>
 
-      <!-- Formula Nav Items Container -->
+      <!-- Scrollable Formula Nav Items Container -->
       <nav class="sidebar__list" id="formulaSidebarList" role="tablist" aria-orientation="vertical">
-        <!-- Rendered dynamically by script.js -->
+        <!-- Injected dynamically via script.js -->
       </nav>
 
+      <!-- Sidebar Footer Tip -->
       <div class="sidebar__footer">
         <div class="tip-card">
           <div class="tip-card__icon">💡</div>
           <div class="tip-card__text">
-            <strong>Tips Belajar:</strong>
-            <p>Klik tombol "Salin" pada sintaks rumus untuk langsung mem-paste ke lembar kerja Excel Anda.</p>
+            <strong>Tips Produktif:</strong>
+            <p>Klik tombol <strong>Copy</strong> di sudut kanan blok rumus untuk langsung mem-paste ke Excel Anda.</p>
           </div>
         </div>
       </div>
@@ -123,9 +178,9 @@
         </div>
       </div>
 
-      <!-- Active Formula Dynamic View Container -->
+      <!-- Active Formula Dynamic View Container (Injected via script.js) -->
       <article class="formula-view" id="formulaDetailContainer">
-        <!-- Injected via script.js -->
+        <!-- Rendered by script.js with .code-block and .copy-btn -->
       </article>
 
     </section>

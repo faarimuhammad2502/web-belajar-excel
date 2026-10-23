@@ -1,9 +1,17 @@
 /* ==========================================================
    rumus • — Master JavaScript (Vanilla JS)
-   Massive Expansion: Accounting (15 Rumus) & HR (15 Rumus)
+   
+   Features Implemented:
+   1. Real-time Sticky Search Filter in Left Sidebar
+   2. Persistent Dark Mode Toggle with localStorage
+   3. Copy-to-Clipboard Functionality for Every Code Block
+   4. Dynamic Module Switcher (ACCOUNTING vs HR - 30 Rumus)
+   5. Dynamic Canvas Animated Favicon
    ========================================================== */
 
-/* ---------- DATABASE KONTEN LENGKAP 30 RUMUS EXCEL ---------- */
+/* ==========================================================
+   DATABASE 30 RUMUS EXCEL LENGKAP (ACCOUNTING & HR)
+   ========================================================== */
 const DATABASE = {
   accounting: [
     {
@@ -26,7 +34,7 @@ const DATABASE = {
         }
       ],
       example: {
-        scenario: "Akuntan ingin merekap total pengeluaran untuk kategori 'Operasional' pada bulan Oktober.",
+        scenario: "Akuntan ingin merekap total pengeluaran untuk kategori 'Operasional' pada bulan Oktober 2026.",
         tableHeaders: ["No. Bukti", "Tanggal", "Kategori", "Deskripsi", "Nominal (Rp)"],
         tableRows: [
           ["BK-101", "02/10/2026", "Operasional", "Listrik & Air Kantor", "3.200.000"],
@@ -89,7 +97,7 @@ const DATABASE = {
         }
       ],
       example: {
-        scenario: "Mencari Kode Akun yang terletak di sebelah KIRI Nama Akun (sesuatu yang tidak bisa dilakukan VLOOKUP standar tanpa modifikasi).",
+        scenario: "Mencari Kode Akun yang terletak di sebelah KIRI Nama Akun (tidak bisa dilakukan VLOOKUP standar tanpa modifikasi).",
         tableHeaders: ["Kode COA (Kiri)", "Nama Akun (Kanan)"],
         tableRows: [
           ["1101", "Kas Kecil"],
@@ -174,7 +182,7 @@ const DATABASE = {
         }
       ],
       example: {
-        scenario: "Membeli mesin fotokopi komersial seharga Rp 50.000.000 yang menghasilkan arus kas Rp 18.000.000/tahun selama 4 tahun dengan diskonto 10%.",
+        scenario: "Membeli mesin cetak komersial seharga Rp 50.000.000 yang menghasilkan arus kas Rp 18.000.000/tahun selama 4 tahun dengan diskonto 10%.",
         tableHeaders: ["Tahun ke-0 (Modal)", "Tahun 1", "Tahun 2", "Tahun 3", "Tahun 4"],
         tableRows: [
           ["-Rp 50.000.000", "Rp 18.000.000", "Rp 18.000.000", "Rp 18.000.000", "Rp 18.000.000"]
@@ -829,50 +837,179 @@ const DATABASE = {
   ]
 };
 
-/* ---------- STATE APLIKASI ---------- */
+/* ==========================================================
+   GLOBAL STATE VARIABLES
+   ========================================================== */
 let currentCategory = "accounting"; // 'accounting' atau 'hr'
-let activeFormulaIndex = 0; // index 0 - 14
+let activeFormulaIndex = 0;          // 0 - 14
 
-/* ---------- DOM ELEMENTS ---------- */
+/* ==========================================================
+   DOM SELECTOR HELPERS
+   ========================================================== */
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
+/* ==========================================================
+   INITIALIZATION ON DOM LOAD
+   ========================================================== */
 document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
   initAnimatedFavicon();
   initCategorySwitcher();
-  initSidebarToggle();
-  initSearch();
+  initSidebarSearch();
+  initSidebarToggleMobile();
   initFooterCategoryLinks();
 
-  // Load awal
+  // Render awal data
   renderSidebarList();
   renderFormulaDetail(0);
 });
 
 /* ==========================================================
-   1. SWITCHER KATEGORI (ACCOUNTING vs HR)
+   FEATURE 2: PERSISTENT DARK MODE LOGIC
+   ========================================================== */
+function initTheme() {
+  const themeToggleBtn = $("#themeToggleBtn");
+  const themeLabel = $("#themeLabelText");
+
+  // Ambil preferensi dari localStorage atau deteksi sistem
+  const savedTheme = localStorage.getItem("rumus_theme");
+  const systemPrefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const isDark = savedTheme === "dark" || (!savedTheme && systemPrefersDark);
+
+  applyTheme(isDark);
+
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", () => {
+      const currentlyDark = document.body.classList.contains("dark-mode");
+      const nextThemeIsDark = !currentlyDark;
+      applyTheme(nextThemeIsDark);
+      
+      // Simpan preferensi pengguna ke localStorage
+      localStorage.setItem("rumus_theme", nextThemeIsDark ? "dark" : "light");
+
+      showToast(nextThemeIsDark ? "Mode Gelap diaktifkan 🌙" : "Mode Terang diaktifkan ☀️");
+    });
+  }
+}
+
+/**
+ * Menerapkan class .dark-mode pada html dan body serta mengupdate label tombol
+ */
+function applyTheme(isDark) {
+  if (isDark) {
+    document.documentElement.classList.add("dark-mode");
+    document.body.classList.add("dark-mode");
+    if ($("#themeLabelText")) $("#themeLabelText").textContent = "Mode Terang";
+  } else {
+    document.documentElement.classList.remove("dark-mode");
+    document.body.classList.remove("dark-mode");
+    if ($("#themeLabelText")) $("#themeLabelText").textContent = "Mode Gelap";
+  }
+}
+
+/* ==========================================================
+   FEATURE 1: REAL-TIME STICKY SIDEBAR SEARCH FILTER
+   ========================================================== */
+function initSidebarSearch() {
+  const searchInput = $("#sidebarSearchInput");
+  const clearBtn = $("#searchClearBtn");
+
+  if (!searchInput) return;
+
+  // Filter saat pengguna mengetik (real-time input event)
+  searchInput.addEventListener("input", (e) => {
+    const query = e.target.value;
+    
+    // Tampilkan / sembunyikan tombol clear (X)
+    if (clearBtn) {
+      clearBtn.hidden = !query;
+    }
+
+    renderSidebarList(query);
+  });
+
+  // Tombol bersihkan pencarian
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      clearBtn.hidden = true;
+      searchInput.focus();
+      renderSidebarList("");
+    });
+  }
+}
+
+/* ==========================================================
+   FEATURE 3: COPY TO CLIPBOARD BUTTON LOGIC
+   ========================================================== */
+/**
+ * Menyalin teks ke clipboard dan memberikan visual feedback "Copied! ✅"
+ * selama 2 detik sebelum kembali ke state awal.
+ */
+async function copyFormulaText(textToCopy, btnElement) {
+  if (!textToCopy) return;
+
+  try {
+    await navigator.clipboard.writeText(textToCopy);
+  } catch (err) {
+    // Fallback untuk browser versi lama / non-HTTPS
+    const textarea = document.createElement("textarea");
+    textarea.value = textToCopy;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    textarea.remove();
+  }
+
+  // Visual feedback pada tombol copy
+  if (btnElement) {
+    const originalHTML = btnElement.innerHTML;
+    btnElement.classList.add("is-copied");
+    btnElement.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span>Copied! ✅</span>
+    `;
+
+    // Kembalikan ke teks dan style semula setelah 2 detik (2000 ms)
+    setTimeout(() => {
+      btnElement.classList.remove("is-copied");
+      btnElement.innerHTML = originalHTML;
+    }, 2000);
+  }
+
+  showToast("Formula berhasil disalin ke clipboard! 📋");
+}
+
+/* ==========================================================
+   CATEGORY SWITCHER (ACCOUNTING vs HR)
    ========================================================== */
 function initCategorySwitcher() {
   const btnAcc = $("#catBtnAccounting");
   const btnHr = $("#catBtnHr");
 
-  btnAcc.addEventListener("click", () => selectCategory("accounting"));
-  btnHr.addEventListener("click", () => selectCategory("hr"));
+  if (btnAcc) btnAcc.addEventListener("click", () => selectCategory("accounting"));
+  if (btnHr) btnHr.addEventListener("click", () => selectCategory("hr"));
 }
 
 function selectCategory(cat) {
   if (currentCategory === cat) return;
   currentCategory = cat;
-  activeFormulaIndex = 0; // Reset ke nomor 1
+  activeFormulaIndex = 0; // Reset ke nomor pertama pada kategori baru
 
-  // Update Buttons Active State
-  $("#catBtnAccounting").classList.toggle("is-active", cat === "accounting");
-  $("#catBtnAccounting").setAttribute("aria-selected", String(cat === "accounting"));
-  $("#catBtnHr").classList.toggle("is-active", cat === "hr");
-  $("#catBtnHr").setAttribute("aria-selected", String(cat === "hr"));
+  // Update Status Aktif Tombol Navigasi Kategori
+  const isAcc = cat === "accounting";
+  $("#catBtnAccounting").classList.toggle("is-active", isAcc);
+  $("#catBtnAccounting").setAttribute("aria-selected", String(isAcc));
+  $("#catBtnHr").classList.toggle("is-active", !isAcc);
+  $("#catBtnHr").setAttribute("aria-selected", String(!isAcc));
 
   // Update Header Banner Texts
-  if (cat === "accounting") {
+  if (isAcc) {
     $("#bannerTagText").textContent = "BIDANG KEUANGAN, AKUNTANSI & PELAPORAN";
     $("#bannerTitle").textContent = "Dashboard Rumus Excel Accounting";
     $("#bannerDesc").textContent = "Panduan lengkap formula perhitungan finansial, otomatisasi pembukuan, evaluasi investasi proyek, dan pelaporan keuangan perusahaan.";
@@ -884,39 +1021,44 @@ function selectCategory(cat) {
     $("#sidebarCategoryLabel").textContent = "MODUL HR";
   }
 
-  // Clear search input
-  const searchInput = $("#formulaSearchInput");
+  // Reset kolom pencarian saat ganti kategori
+  const searchInput = $("#sidebarSearchInput");
+  const clearBtn = $("#searchClearBtn");
   if (searchInput) searchInput.value = "";
+  if (clearBtn) clearBtn.hidden = true;
 
-  renderSidebarList();
+  renderSidebarList("");
   renderFormulaDetail(0);
 
-  // Smooth scroll ke atas dashboard jika di mobile
+  // Tutup drawer di mobile
   if (window.innerWidth <= 960) {
     $("#dashboardSidebar").classList.remove("is-open");
   }
 }
 
 /* ==========================================================
-   2. RENDER SIDEBAR LIST (1 S/D 15)
+   RENDER SIDEBAR ITEMS WITH REAL-TIME FILTER
    ========================================================== */
 function renderSidebarList(filterText = "") {
   const container = $("#formulaSidebarList");
+  if (!container) return;
   container.innerHTML = "";
 
   const list = DATABASE[currentCategory];
   const query = filterText.toLowerCase().trim();
 
-  let matchesCount = 0;
+  let visibleCount = 0;
 
   list.forEach((item, index) => {
-    const isMatch = !query || 
+    // Pencarian case-insensitive mencakup judul, tag kualifikasi, atau nomor
+    const matches = !query || 
       item.title.toLowerCase().includes(query) || 
       item.tag.toLowerCase().includes(query) ||
-      item.number.includes(query);
+      item.number.includes(query) ||
+      item.purpose.toLowerCase().includes(query);
 
-    if (isMatch) {
-      matchesCount++;
+    if (matches) {
+      visibleCount++;
       const btn = document.createElement("button");
       btn.className = `sidebar__item ${index === activeFormulaIndex ? "is-active" : ""}`;
       btn.setAttribute("role", "tab");
@@ -929,7 +1071,7 @@ function renderSidebarList(filterText = "") {
           <span class="item-title">${item.title}</span>
           <span class="item-tag">${item.tag}</span>
         </div>
-        <span class="item-arrow">→</span>
+        <span class="item-arrow" aria-hidden="true">→</span>
       `;
 
       btn.addEventListener("click", () => {
@@ -943,49 +1085,70 @@ function renderSidebarList(filterText = "") {
     }
   });
 
-  $("#formulaCounter").textContent = `${matchesCount} Materi`;
+  // Tampilkan pesan kosong jika tidak ada rumus yang sesuai kueri
+  if (visibleCount === 0) {
+    container.innerHTML = `
+      <div class="sidebar-no-results">
+        <span>🔍</span>
+        <p>Tidak ada rumus dengan kata kunci <strong>"${filterText}"</strong></p>
+      </div>
+    `;
+  }
+
+  // Update total badge
+  const counterEl = $("#formulaCounter");
+  if (counterEl) {
+    counterEl.textContent = `${visibleCount} Materi`;
+  }
 }
 
 function selectFormula(index) {
   activeFormulaIndex = index;
 
-  // Update active class di sidebar
+  // Update class active di sidebar list
   $$(".sidebar__item").forEach((el) => {
     const elIdx = parseInt(el.dataset.index, 10);
-    el.classList.toggle("is-active", elIdx === activeFormulaIndex);
-    el.setAttribute("aria-selected", String(elIdx === activeFormulaIndex));
+    const isActive = elIdx === activeFormulaIndex;
+    el.classList.toggle("is-active", isActive);
+    el.setAttribute("aria-selected", String(isActive));
   });
 
   renderFormulaDetail(index);
 }
 
 /* ==========================================================
-   3. RENDER FORMULA DETAIL VIEW (RIGHT STAGE)
+   RENDER FORMULA DETAIL VIEW (RIGHT CONTENT STAGE)
    ========================================================== */
 function renderFormulaDetail(index) {
   const item = DATABASE[currentCategory][index];
   if (!item) return;
 
-  $("#statActiveNum").textContent = item.number;
+  // Update indikator nomor di banner atas
+  const statNum = $("#statActiveNum");
+  if (statNum) statNum.textContent = item.number;
 
   const container = $("#formulaDetailContainer");
+  if (!container) return;
 
-  // Generate Syntax HTML Blocks
+  // 1. Generate Syntax Blocks wrapped with .code-block and .copy-btn
   const syntaxHTML = item.syntax.map((s) => `
     <div class="syntax-card">
-      <div class="syntax-card__top">
-        <span class="syntax-label">${s.label}</span>
-        <button class="btn-copy-code" data-copy='${s.code.replace(/'/g, "&apos;")}'>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-          <span>Salin</span>
+      <span class="syntax-card__label">${s.label}</span>
+      <div class="code-block">
+        <pre><code>${escapeHTML(s.code)}</code></pre>
+        <button type="button" class="copy-btn" data-copy="${escapeAttribute(s.code)}" aria-label="Salin rumus ${item.title}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+          </svg>
+          <span>Copy</span>
         </button>
       </div>
-      <pre class="syntax-code"><code>${s.code}</code></pre>
       <p class="syntax-params">${s.params}</p>
     </div>
   `).join("");
 
-  // Generate Table HTML
+  // 2. Generate Table Preview HTML
   const thHTML = item.example.tableHeaders.map((th) => `<th>${th}</th>`).join("");
   const trHTML = item.example.tableRows.map((row) => `
     <tr>
@@ -993,6 +1156,7 @@ function renderFormulaDetail(index) {
     </tr>
   `).join("");
 
+  // 3. Render Inner Structure
   container.innerHTML = `
     <!-- Detail Header -->
     <header class="view-header">
@@ -1005,11 +1169,11 @@ function renderFormulaDetail(index) {
       <p class="view-subtitle">${item.purpose}</p>
     </header>
 
-    <!-- Section 1: Sintaks & Formula -->
-    <section class="view-card">
+    <!-- Section 1: Sintaks & Formula Code Block -->
+    <section class="view-card" aria-labelledby="syntaxCardHeading">
       <div class="view-card__head">
         <span class="card-chip">SINTAKS RESMI</span>
-        <h3 class="card-title">Bentuk Penulisan Rumus</h3>
+        <h3 class="card-title" id="syntaxCardHeading">Bentuk Penulisan Rumus Excel</h3>
       </div>
       <div class="syntax-grid">
         ${syntaxHTML}
@@ -1017,10 +1181,10 @@ function renderFormulaDetail(index) {
     </section>
 
     <!-- Section 2: Studi Kasus Riil & Contoh Tabel -->
-    <section class="view-card">
+    <section class="view-card" aria-labelledby="exampleCardHeading">
       <div class="view-card__head">
         <span class="card-chip">CONTOH KASUS PRAKTIK</span>
-        <h3 class="card-title">Simulasi Lembar Kerja Excel</h3>
+        <h3 class="card-title" id="exampleCardHeading">Simulasi Lembar Kerja Kasus Nyata</h3>
         <p class="card-desc">${item.example.scenario}</p>
       </div>
 
@@ -1035,11 +1199,20 @@ function renderFormulaDetail(index) {
         </table>
       </div>
 
-      <!-- Result Showcase Box -->
+      <!-- Result Showcase with Copy Button for Formula Used -->
       <div class="result-showcase">
         <div class="result-showcase__calc">
           <span class="res-label">Formula yang Diterapkan:</span>
-          <code class="res-code">${item.example.formulaUsed}</code>
+          <div class="res-code-wrapper">
+            <code class="res-code">${escapeHTML(item.example.formulaUsed)}</code>
+            <button type="button" class="copy-btn copy-btn--sm" data-copy="${escapeAttribute(item.example.formulaUsed)}" aria-label="Salin rumus contoh">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+              </svg>
+              <span>Copy</span>
+            </button>
+          </div>
         </div>
         <div class="result-showcase__val">
           <span class="res-label">Output Hasil Excel:</span>
@@ -1052,7 +1225,7 @@ function renderFormulaDetail(index) {
       </p>
     </section>
 
-    <!-- Section 3: Pro Tip Praktisi -->
+    <!-- Section 3: Tips Praktisi Kantor -->
     <section class="tip-banner">
       <div class="tip-banner__icon">💡</div>
       <div class="tip-banner__content">
@@ -1062,7 +1235,7 @@ function renderFormulaDetail(index) {
     </section>
 
     <!-- Navigasi Bawah (Sebelumnya & Selanjutnya) -->
-    <nav class="view-nav-buttons">
+    <nav class="view-nav-buttons" aria-label="Navigasi urutan rumus">
       <button class="btn btn--outline btn--sm" id="btnPrevFormula" ${index === 0 ? "disabled" : ""}>
         ← Rumus Sebelumnya
       </button>
@@ -1073,15 +1246,15 @@ function renderFormulaDetail(index) {
     </nav>
   `;
 
-  // Attach event listener ke tombol copy code
-  $$(".btn-copy-code", container).forEach((btn) => {
+  // Attach event listener ke seluruh tombol .copy-btn yang baru dirender
+  $$(".copy-btn", container).forEach((btn) => {
     btn.addEventListener("click", () => {
-      const code = btn.dataset.copy;
-      copyToClipboard(code, btn);
+      const text = btn.dataset.copy;
+      copyFormulaText(text, btn);
     });
   });
 
-  // Attach tombol prev/next
+  // Attach event listener navigasi Sebelumnya / Selanjutnya
   const btnPrev = $("#btnPrevFormula");
   const btnNext = $("#btnNextFormula");
 
@@ -1108,34 +1281,25 @@ function scrollToStageTop() {
 }
 
 /* ==========================================================
-   4. COPY TO CLIPBOARD
+   HELPER UTILITIES: HTML ESCAPING
    ========================================================== */
-async function copyToClipboard(text, btnElement) {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    ta.remove();
-  }
-
-  if (btnElement) {
-    const span = btnElement.querySelector("span");
-    const origText = span ? span.textContent : "";
-    if (span) span.textContent = "Tersalin ✓";
-    btnElement.classList.add("is-copied");
-    setTimeout(() => {
-      if (span) span.textContent = origText;
-      btnElement.classList.remove("is-copied");
-    }, 1800);
-  }
-
-  showToast("Sintaks rumus disalin ke clipboard! 📋");
+function escapeHTML(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
+function escapeAttribute(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/* ==========================================================
+   TOAST NOTIFICATION HELPER
+   ========================================================== */
 function showToast(message) {
   const toast = $("#toast");
   if (!toast) return;
@@ -1144,26 +1308,13 @@ function showToast(message) {
   clearTimeout(showToast.timer);
   showToast.timer = setTimeout(() => {
     toast.classList.remove("is-visible");
-  }, 2200);
+  }, 2400);
 }
 
 /* ==========================================================
-   5. SEARCH FILTER DI SIDEBAR
+   RESPONSIVE MOBILE SIDEBAR DRAWER TOGGLE
    ========================================================== */
-function initSearch() {
-  const input = $("#formulaSearchInput");
-  if (!input) return;
-
-  input.addEventListener("input", (e) => {
-    const val = e.target.value;
-    renderSidebarList(val);
-  });
-}
-
-/* ==========================================================
-   6. RESPONSIVE SIDEBAR TOGGLE (MOBILE / TABLET)
-   ========================================================== */
-function initSidebarToggle() {
+function initSidebarToggleMobile() {
   const toggle = $("#sidebarToggle");
   const sidebar = $("#dashboardSidebar");
   if (!toggle || !sidebar) return;
@@ -1174,7 +1325,7 @@ function initSidebarToggle() {
 }
 
 /* ==========================================================
-   7. FOOTER QUICK SWITCH LINKS
+   FOOTER CATEGORY LINK HANDLERS
    ========================================================== */
 function initFooterCategoryLinks() {
   const accLink = $(".switch-to-acc");
@@ -1198,7 +1349,7 @@ function initFooterCategoryLinks() {
 }
 
 /* ==========================================================
-   8. ANIMATED FAVICON (CANVAS PULSE)
+   CANVAS ANIMATED FAVICON
    ========================================================== */
 function initAnimatedFavicon() {
   const link = $("#favicon");
@@ -1211,14 +1362,14 @@ function initAnimatedFavicon() {
   if (!ctx) return;
 
   let frame = 0;
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function roundRect(x, y, w, h, r) {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x, y + h, x, y + h, r);
     ctx.arcTo(x, y, x + w, y, r);
     ctx.closePath();
   }

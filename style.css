@@ -1,29 +1,50 @@
 /* ==========================================================
    rumus • — Master Dashboard Stylesheet
-   Modern Dashboard UI: Accounting & HR Module Split
+   Features Integrated:
+   1. Real-time Sticky Search Bar in Sidebar
+   2. Persistent Dark Mode with CSS Variable Overrides
+   3. Terminal-style Code Blocks with Floating Copy-to-Clipboard
    ========================================================== */
 
-/* ---------- 1. Design Variables & Tokens ---------- */
+/* ---------- 1. Design Variables & Color Palettes ---------- */
 :root {
-  /* Brand Green Colors */
-  --c-primary: #19734d;          /* Hijau khas rumus */
+  /* Brand Green Tones */
+  --c-primary: #19734d;          /* Hijau rumus utama */
   --c-primary-hover: #12573a;
   --c-primary-dark: #123d2e;     /* Deep forest green */
-  --c-footer-bg: #0f3525;        /* Background footer */
-  --c-lime: #ddf494;             /* Aksen stiker & link */
+  --c-lime: #ddf494;             /* Aksen neon / stiker */
   --c-lime-dark: #123d2e;
-  --c-sage-card: #e9f0e4;        /* Latar kartu & baris aktif */
-  --c-sage-light: #f4f7f2;       /* Baris alternate / tabel head */
 
-  /* Neutral & Text */
-  --c-text-main: #192f27;        /* Teks judul */
-  --c-text-body: #637169;        /* Teks paragraf */
-  --c-border: #dde4da;           /* Garis batas */
-  --c-border-light: #ebf0ea;
-  --c-white: #ffffff;
-  --c-bg: #f8faf8;               /* Latar belakang dashboard */
+  /* Theme Dependent Colors (Default: Light Mode) */
+  --c-bg: #f8faf8;               /* Background halaman */
+  --c-surface: #ffffff;          /* Background kartu & sidebar */
+  --c-surface-subtle: #fbfdfa;   /* Background card footer / subtle */
+  --c-topbar-bg: rgba(255, 255, 255, 0.94);
+  --c-text-main: #192f27;        /* Teks judul utama */
+  --c-text-body: #637169;        /* Teks paragraf / keterangan */
+  --c-text-muted: #87998f;       /* Teks sekunder / placeholder */
+  
+  --c-border: #dde4da;           /* Garis batas kartu */
+  --c-border-light: #ebf0ea;     /* Garis batas halus */
+  --c-border-hover: #19734d;     /* Garis batas saat hover */
 
-  /* Dimensions */
+  --c-sage-card: #e9f0e4;        /* Latar kartu aksen & active tab */
+  --c-sage-light: #f4f7f2;       /* Baris alternate / formula background */
+  
+  --c-footer-bg: #0f3525;        /* Dark green background footer */
+  --c-footer-text: #a4beaf;
+
+  /* Code Block Colors (Terminal style) */
+  --c-code-bg: #0d261b;          /* Dark code block background */
+  --c-code-text: #a7f3c6;        /* Green phosphor code text */
+  --c-code-border: #1d4030;      /* Code block border */
+  --c-copy-bg: rgba(255, 255, 255, 0.12);
+  --c-copy-text: #ffffff;
+  --c-copy-hover: #19734d;
+  --c-copy-success-bg: #19734d;
+  --c-copy-success-text: #ffffff;
+
+  /* Dimensions & Radius */
   --topbar-h: 76px;
   --sidebar-w: 360px;
   --radius-sm: 8px;
@@ -32,20 +53,70 @@
   --radius-pill: 9999px;
 
   /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(18, 61, 46, 0.04);
-  --shadow-card: 0 10px 30px rgba(18, 61, 46, 0.05);
-  --shadow-hover: 0 14px 34px rgba(18, 61, 46, 0.09);
+  --shadow-sm: 0 2px 8px rgba(18, 61, 46, 0.05);
+  --shadow-card: 0 10px 30px rgba(18, 61, 46, 0.06);
+  --shadow-hover: 0 14px 34px rgba(18, 61, 46, 0.1);
+  --shadow-sidebar: 6px 0 24px rgba(0, 0, 0, 0.04);
 
   /* Fonts */
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', Consolas, monospace;
+
+  /* Transition for Smooth Theme Switching */
+  --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* ---------- 2. Reset & Global ---------- */
+/* ---------- 2. Dark Mode Overrides ---------- */
+/* Applied to <html> or <body> via JavaScript */
+html.dark-mode,
+body.dark-mode {
+  --c-primary: #21a366;          /* Hijau lebih cerah untuk kontras dark */
+  --c-primary-hover: #2ec17b;
+  --c-primary-dark: #0a1b12;
+
+  --c-bg: #0b140f;               /* Ultra deep dark background */
+  --c-surface: #122119;          /* Dark card surface */
+  --c-surface-subtle: #0f1c15;   /* Subtle dark section */
+  --c-topbar-bg: rgba(18, 33, 25, 0.94);
+  --c-text-main: #f0f7f2;        /* Bright text */
+  --c-text-body: #a9beaf;        /* Muted light text */
+  --c-text-muted: #6e8475;
+
+  --c-border: #213a2d;           /* Dark borders */
+  --c-border-light: #192d22;
+  --c-border-hover: #21a366;
+
+  --c-sage-card: #183324;        /* Dark sage container */
+  --c-sage-light: #14281e;       /* Dark alternate row */
+
+  --c-footer-bg: #070d0a;        /* Even darker footer */
+  --c-footer-text: #8ea797;
+
+  /* Dark mode code blocks */
+  --c-code-bg: #08120c;
+  --c-code-text: #6ee7b7;
+  --c-code-border: #1a3827;
+  --c-copy-bg: rgba(255, 255, 255, 0.08);
+  --c-copy-text: #e2ebe5;
+  --c-copy-hover: #21a366;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 14px 34px rgba(0, 0, 0, 0.55);
+  --shadow-sidebar: 6px 0 24px rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- 3. Reset & Base Typography ---------- */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  transition: var(--theme-transition);
+}
+
+/* Disable transition on pseudo elements that don't need it */
+*::before, *::after {
+  transition: none;
 }
 
 html {
@@ -76,13 +147,13 @@ button {
 
 .font-mono { font-family: var(--font-mono) !important; }
 
-/* ---------- 3. Top Navigation Bar ---------- */
+/* ---------- 4. Top Navigation Bar ---------- */
 .topbar {
   position: sticky;
   top: 0;
   z-index: 200;
   height: var(--topbar-h);
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--c-topbar-bg);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--c-border);
 }
@@ -112,11 +183,11 @@ button {
 }
 
 .brand__icon {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 9px;
   background: var(--c-primary);
-  color: var(--c-white);
+  color: #ffffff;
   display: grid;
   place-items: center;
 }
@@ -169,8 +240,8 @@ button {
 
 .category-btn.is-active {
   background: var(--c-primary);
-  color: var(--c-white);
-  box-shadow: 0 4px 14px rgba(25, 115, 77, 0.25);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(25, 115, 77, 0.28);
 }
 
 .category-btn .cat-icon {
@@ -186,50 +257,72 @@ button {
 }
 
 .category-btn:not(.is-active) .count-tag {
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.08);
   color: var(--c-text-body);
 }
 
-/* Topbar Right Search & Mobile Toggle */
+/* Topbar Right (Dark Mode & Menu Toggle) */
 .topbar__right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.search-mini {
-  display: flex;
+/* ==========================================================
+   FEATURE 2: DARK MODE TOGGLE BUTTON
+   ========================================================== */
+.theme-toggle-btn {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--c-bg);
+  height: 40px;
+  padding: 0 14px;
+  background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-pill);
-  padding: 6px 14px;
-  width: 220px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.search-mini:focus-within {
-  border-color: var(--c-primary);
-  box-shadow: 0 0 0 3px rgba(25, 115, 77, 0.12);
-  background: var(--c-white);
-}
-
-.search-mini svg {
-  color: var(--c-text-body);
-  flex-shrink: 0;
-}
-
-.search-mini input {
-  border: none;
-  background: transparent;
-  font: inherit;
-  font-size: 13px;
-  width: 100%;
   color: var(--c-text-main);
-  outline: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
 }
 
+.theme-toggle-btn:hover {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+  transform: translateY(-1px);
+}
+
+.theme-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-primary);
+}
+
+/* Light Mode: Show Moon (Switch to Dark), Hide Sun */
+html:not(.dark-mode) .theme-icon--sun {
+  display: none;
+}
+html:not(.dark-mode) .theme-icon--moon {
+  display: inline-flex;
+}
+
+/* Dark Mode: Show Sun (Switch to Light), Hide Moon */
+html.dark-mode .theme-icon--sun {
+  display: inline-flex;
+  color: var(--c-lime);
+}
+html.dark-mode .theme-icon--moon {
+  display: none;
+}
+
+.theme-label {
+  user-select: none;
+}
+
+/* Mobile Sidebar Drawer Button */
 #sidebarToggle {
   display: none;
 }
@@ -252,34 +345,34 @@ button {
 
 .btn--primary {
   background: var(--c-primary);
-  color: var(--c-white);
+  color: #ffffff;
   border: 1px solid var(--c-primary);
 }
 
 .btn--primary:hover {
   background: var(--c-primary-hover);
-  box-shadow: 0 6px 18px rgba(25, 115, 77, 0.25);
+  box-shadow: 0 6px 18px rgba(25, 115, 77, 0.28);
 }
 
 .btn--outline {
-  background: var(--c-white);
+  background: var(--c-surface);
   color: var(--c-text-main);
   border: 1px solid var(--c-border);
 }
 
 .btn--outline:hover {
   border-color: var(--c-primary);
-  background: var(--c-sage-light);
+  background: var(--c-sage-card);
   color: var(--c-primary);
 }
 
 .btn--sm {
-  height: 38px;
+  height: 40px;
   padding: 0 16px;
   font-size: 13.5px;
 }
 
-/* ---------- 4. Dashboard Two-Column Layout ---------- */
+/* ---------- 5. Dashboard Two-Column Layout ---------- */
 .dashboard-layout {
   display: grid;
   grid-template-columns: var(--sidebar-w) 1fr;
@@ -288,9 +381,11 @@ button {
   min-height: calc(100vh - var(--topbar-h));
 }
 
-/* ================= 5. Left Sidebar (Formula List) ================= */
+/* ==========================================================
+   FEATURE 1: LEFT SIDEBAR WITH STICKY REAL-TIME SEARCH
+   ========================================================== */
 .sidebar {
-  background: var(--c-white);
+  background: var(--c-surface);
   border-right: 1px solid var(--c-border);
   display: flex;
   flex-direction: column;
@@ -301,9 +396,18 @@ button {
   z-index: 90;
 }
 
-.sidebar__header {
-  padding: 20px 22px 14px;
+/* Sticky Container at Top of Sidebar */
+.sidebar__top-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--c-surface);
   border-bottom: 1px solid var(--c-border-light);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.sidebar__header {
+  padding: 20px 22px 12px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -334,6 +438,68 @@ button {
   border-radius: var(--radius-pill);
 }
 
+/* Modern Sticky Search Bar Styling */
+.sidebar-search {
+  padding: 0 18px 16px;
+}
+
+.sidebar-search__wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--c-bg);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-md);
+  padding: 0 12px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-search__wrapper:focus-within {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(25, 115, 77, 0.16);
+  background: var(--c-surface);
+}
+
+.sidebar-search .search-icon {
+  color: var(--c-text-muted);
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.sidebar-search__input {
+  width: 100%;
+  height: 42px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--c-text-main);
+  outline: none;
+}
+
+.sidebar-search__input::placeholder {
+  color: var(--c-text-muted);
+  font-size: 13px;
+}
+
+/* Clear Search Button (x) */
+.search-clear-btn {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--c-text-muted);
+  padding: 4px 6px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-clear-btn:hover {
+  color: var(--c-text-main);
+  background: var(--c-sage-card);
+}
+
 /* Scrollable Formula List */
 .sidebar__list {
   flex: 1;
@@ -353,7 +519,7 @@ button {
   border-radius: 4px;
 }
 
-/* Sidebar Item (Formula card in sidebar) */
+/* Individual Formula Item in Sidebar */
 .sidebar__item {
   display: flex;
   align-items: center;
@@ -375,7 +541,7 @@ button {
 
 .sidebar__item.is-active {
   background: var(--c-sage-card);
-  border-color: #c9dec2;
+  border-color: var(--c-border-hover);
   box-shadow: var(--shadow-sm);
 }
 
@@ -383,10 +549,10 @@ button {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 6px;
-  background: #ebf3e9;
+  background: var(--c-sage-card);
   color: var(--c-primary);
   display: grid;
   place-items: center;
@@ -395,7 +561,7 @@ button {
 
 .sidebar__item.is-active .item-num {
   background: var(--c-primary);
-  color: var(--c-white);
+  color: #ffffff;
 }
 
 .item-info {
@@ -439,16 +605,30 @@ button {
   transform: translateX(0);
 }
 
+/* Empty Search Result State */
+.sidebar-no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--c-text-muted);
+  font-size: 13.5px;
+}
+
+.sidebar-no-results span {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 8px;
+}
+
 .sidebar__footer {
   padding: 14px;
   border-top: 1px solid var(--c-border-light);
-  background: #fbfdfa;
+  background: var(--c-surface-subtle);
 }
 
 .tip-card {
   display: flex;
   gap: 10px;
-  background: var(--c-white);
+  background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
@@ -471,15 +651,15 @@ button {
   margin-top: 2px;
 }
 
-/* ================= 6. Right Content Stage ================= */
+/* ---------- 6. Right Content Stage ---------- */
 .content-stage {
-  padding: 28px 40px 60px;
+  padding: 32px 42px 64px;
   overflow-y: auto;
 }
 
 /* Overview Banner */
 .content-banner {
-  background: linear-gradient(135deg, var(--c-sage-card) 0%, #f1f7ed 100%);
+  background: linear-gradient(135deg, var(--c-sage-card) 0%, var(--c-surface) 100%);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-lg);
   padding: 28px 32px;
@@ -488,6 +668,7 @@ button {
   justify-content: space-between;
   align-items: center;
   gap: 24px;
+  box-shadow: var(--shadow-sm);
 }
 
 .tag-label {
@@ -529,7 +710,7 @@ button {
 }
 
 .stat-pill {
-  background: var(--c-white);
+  background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
   padding: 12px 18px;
@@ -554,7 +735,7 @@ button {
   white-space: nowrap;
 }
 
-/* ================= 7. Formula View Detail Cards ================= */
+/* ---------- 7. Formula View Detail Cards ---------- */
 .formula-view {
   display: flex;
   flex-direction: column;
@@ -579,7 +760,7 @@ button {
   font-size: 11px;
   font-weight: 700;
   background: var(--c-primary);
-  color: var(--c-white);
+  color: #ffffff;
   padding: 3px 10px;
   border-radius: var(--radius-pill);
 }
@@ -613,9 +794,9 @@ button {
   max-width: 860px;
 }
 
-/* Cards (Sintaks & Praktek) */
+/* Content Cards (Sintaks & Praktek) */
 .view-card {
-  background: var(--c-white);
+  background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-lg);
   padding: 28px;
@@ -650,70 +831,97 @@ button {
   margin-top: 4px;
 }
 
-/* Syntax Card Grid */
+/* ==========================================================
+   FEATURE 3: CODE-BLOCK CONTAINER & FLOATING COPY BUTTON
+   ========================================================== */
 .syntax-grid {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .syntax-card {
-  background: #0d2a1f;
-  color: var(--c-white);
-  border-radius: var(--radius-md);
-  padding: 16px 20px;
-}
-
-.syntax-card__top {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.syntax-label {
+.syntax-card__label {
   font-size: 12px;
   font-weight: 700;
-  color: var(--c-lime);
-  letter-spacing: 0.05em;
+  color: var(--c-primary);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.btn-copy-code {
-  display: inline-flex;
+/* Terminal / Code Editor Container */
+.code-block {
+  position: relative;
+  background: var(--c-code-bg);
+  border: 1px solid var(--c-code-border);
+  border-radius: var(--radius-md);
+  padding: 16px 20px 16px 18px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--c-white);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  transition: all 0.2s;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.btn-copy-code:hover, .btn-copy-code.is-copied {
-  background: var(--c-primary);
-  color: var(--c-white);
+.code-block pre {
+  margin: 0;
+  flex: 1;
+  overflow-x: auto;
 }
 
-.syntax-code {
+.code-block code {
   font-family: var(--font-mono);
   font-size: 13.5px;
-  color: #a7f3c6;
-  background: rgba(0, 0, 0, 0.25);
-  padding: 10px 14px;
-  border-radius: 6px;
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-break: break-all;
+  font-weight: 600;
+  color: var(--c-code-text);
+  line-height: 1.5;
+  white-space: pre;
+  word-break: normal;
+}
+
+/* Modern Floating Copy Button */
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--c-copy-bg);
+  color: var(--c-copy-text);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.copy-btn:hover {
+  background: var(--c-copy-hover);
+  border-color: var(--c-copy-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Success State when Copied */
+.copy-btn.is-copied {
+  background: var(--c-copy-success-bg) !important;
+  color: var(--c-copy-success-text) !important;
+  border-color: var(--c-copy-success-bg) !important;
 }
 
 .syntax-params {
-  font-size: 12px;
-  color: #c5d7cb;
-  margin-top: 10px;
-  line-height: 1.5;
+  font-size: 12.5px;
+  color: var(--c-text-body);
+  line-height: 1.55;
+  padding-left: 4px;
 }
 
 /* Table Simulation */
@@ -733,7 +941,7 @@ button {
 
 .figma-table th {
   background: var(--c-primary);
-  color: var(--c-white);
+  color: #ffffff;
   font-weight: 600;
   padding: 11px 16px;
   text-align: left;
@@ -746,7 +954,7 @@ button {
 }
 
 .figma-table tbody tr:nth-child(even) {
-  background: #fafcfa;
+  background: var(--c-sage-light);
 }
 
 .figma-table tbody tr:hover {
@@ -756,10 +964,10 @@ button {
 /* Result Showcase Box */
 .result-showcase {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1.25fr 1fr;
   gap: 16px;
   background: var(--c-sage-card);
-  border: 1px solid #c9dec2;
+  border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
   padding: 18px 22px;
   align-items: center;
@@ -774,12 +982,22 @@ button {
   margin-bottom: 6px;
 }
 
+.res-code-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .res-code {
   font-family: var(--font-mono);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--c-primary-dark);
   word-break: break-all;
+}
+
+html.dark-mode .res-code {
+  color: var(--c-lime);
 }
 
 .res-output {
@@ -788,7 +1006,7 @@ button {
   font-size: 17px;
   font-weight: 800;
   color: var(--c-primary);
-  background: var(--c-white);
+  background: var(--c-surface);
   padding: 6px 14px;
   border-radius: 6px;
   border: 1.5px solid var(--c-primary);
@@ -809,8 +1027,8 @@ button {
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  background: #fbfdf9;
-  border: 1px dashed var(--c-primary);
+  background: var(--c-surface-subtle);
+  border: 1.5px dashed var(--c-primary);
   border-radius: var(--radius-md);
   padding: 18px 22px;
 }
@@ -858,9 +1076,9 @@ button {
 /* ---------- 8. Footer (Dark Forest Green) ---------- */
 .footer-dark {
   background-color: var(--c-footer-bg);
-  color: #a4beaf;
+  color: var(--c-footer-text);
   padding: 64px 0 32px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .container {
@@ -878,7 +1096,7 @@ button {
 }
 
 .brand--footer .brand__title--white {
-  color: var(--c-white);
+  color: #ffffff;
 }
 
 .brand--footer .brand__dot--white {
@@ -893,7 +1111,7 @@ button {
 .footer-tagline {
   font-size: 14px;
   line-height: 1.7;
-  color: #a4beaf;
+  color: var(--c-footer-text);
   max-width: 360px;
   margin: 18px 0 20px;
 }
@@ -913,7 +1131,7 @@ button {
 .footer-col__title {
   font-size: 14px;
   font-weight: 700;
-  color: var(--c-white);
+  color: #ffffff;
   margin-bottom: 16px;
 }
 
@@ -926,7 +1144,7 @@ button {
 
 .footer-col__list a {
   font-size: 13.5px;
-  color: #a4beaf;
+  color: var(--c-footer-text);
   transition: color 0.2s;
 }
 
@@ -935,7 +1153,7 @@ button {
 }
 
 .footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 24px;
   display: flex;
   justify-content: space-between;
@@ -946,19 +1164,19 @@ button {
   gap: 10px;
 }
 
-/* Toast Notification */
+/* Toast Pop-up Notification */
 .toast {
   position: fixed;
   bottom: 24px;
   left: 50%;
   transform: translate(-50%, 150%);
   background: var(--c-text-main);
-  color: var(--c-white);
+  color: var(--c-bg);
   padding: 12px 22px;
   border-radius: var(--radius-pill);
   font-size: 13px;
   font-weight: 600;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
 }
@@ -993,7 +1211,7 @@ button {
     left: 0;
     bottom: 0;
     width: 320px;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
     transform: translateX(-100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -1006,19 +1224,23 @@ button {
     display: inline-flex;
   }
 
+  .theme-label {
+    display: none; /* Icon only on mobile */
+  }
+
+  .theme-toggle-btn {
+    padding: 0 10px;
+  }
+
   .topbar__inner {
     padding-inline: 16px;
   }
 
   .category-btn span:not(.count-tag) {
-    font-size: 12.5px;
+    font-size: 12px;
   }
 
   .category-btn .count-tag {
-    display: none;
-  }
-
-  .search-mini {
     display: none;
   }
 
@@ -1034,17 +1256,17 @@ button {
 
 @media (max-width: 640px) {
   .category-btn {
-    padding: 6px 12px;
-    font-size: 11.5px;
+    padding: 6px 10px;
+    font-size: 11px;
   }
 
   .category-btn .cat-icon {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
   }
 
   .brand__title {
-    font-size: 20px;
+    font-size: 19px;
   }
 
   .brand__badge {
@@ -1061,6 +1283,16 @@ button {
 
   .view-card {
     padding: 20px 16px;
+  }
+
+  .code-block {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .copy-btn {
+    align-self: flex-end;
   }
 
   .footer-links-group {
